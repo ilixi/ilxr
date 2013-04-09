@@ -45,36 +45,69 @@ mkdir -p $BUILD
 mkdir -p $INSTALL
 
 # === FUNCTION ================================================================
-#  NAME: git_source
-#  DESCRIPTION: Clone or update source for given git repository
+#  NAME: source_git_clone
+#  DESCRIPTION: Clones a git repository.
+#  PARAMETER 1: destdir
+#  PARAMETER 2: url
+#  PARAMETER 3: branch (optional)
+# =============================================================================
+source_git_clone () 
+{
+
+   if [ $# -lt 2 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+
+   if [ $# -eq 2 ]
+   then            
+      git clone $2 $1
+   else
+      local br=$(git ls-remote --heads $2 | grep $3)
+      if [[ "${br}" != "" ]]
+      then
+         git clone -b $3 $2 $1
+      else
+         echo "Error: Branch \"$3\" does not exist!"
+         exit 1
+      fi
+   fi
+
+}
+
+# === FUNCTION ================================================================
+#  NAME: source_fetch_git
+#  DESCRIPTION: Fetch source using git.
 #  PARAMETER 1: name
 #  PARAMETER 2: url
+#  PARAMETER 3: branch (optional)
 # =============================================================================
-git_source () 
+source_fetch_git () 
 {
+
+   if [ $# -lt 2 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
 
    local GIT_SOURCE=$SOURCE/$1
 
-   echo
-   echo "Fetching $1."
-   echo "Check if $1 source is available."
+   echo -e "\nFetching $1."
    if [ -d $GIT_SOURCE ]
    then
-      echo "$1 source found."
-      echo "Check if $1 source has a valid git-dir."
       if [ $( git rev-parse --resolve-git-dir $GIT_SOURCE/.git ) ]
       then
-         echo "git-dir is valid. executing git fetch and merge."
-         git --git-dir= $GIT_SOURCE/.git fetch
-         git --git-dir=$GIT_SOURCE/.git --work-tree=$GIT_SOURCE merge origin/master
+         echo "updating..."
+         git --git-dir=$GIT_SOURCE/.git --work-tree=$GIT_SOURCE pull
       else
-         echo "git-dir is not valid. executing rm -rf and git clone."
+         echo "git-dir is not valid."
          rm -rf $GIT_SOURCE
-         git clone $2 $GIT_SOURCE
+         source_git_clone $GIT_SOURCE $2 $3
       fi
    else
-      echo "$1 source not found. executing git clone."
-      git clone $2 $GIT_SOURCE
+      source_git_clone $GIT_SOURCE $2 $3
    fi
 
 }
@@ -82,6 +115,9 @@ git_source ()
 #-------------------------------------------------------------------------------
 # Get source
 #-------------------------------------------------------------------------------
-git_source "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fusion.git"
-git_source "flex" "git://git.directfb.org/git/directfb/core/flux.git"
-git_source "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git"
+source_fetch_git "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fusion.git"
+source_fetch_git "flux" "git://git.directfb.org/git/directfb/core/flux.git"
+source_fetch_git "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git" "directfb-1.6"
+source_fetch_git "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
+
+exit 0
