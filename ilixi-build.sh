@@ -26,9 +26,9 @@ SOURCE=$BASE/source
 BUILD=$BASE/build
 INSTALL=$BASE/install
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Print directory names
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 echo
 echo "Base directory is $BASE."
 echo "Source directory is $SOURCE."
@@ -36,9 +36,9 @@ echo "Build directory is $BUILD."
 echo "Install directory is $INSTALL."
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Create directories
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 echo "Create directories."
 mkdir -p $SOURCE
 mkdir -p $BUILD
@@ -77,13 +77,13 @@ source_git_clone ()
 }
 
 # === FUNCTION ================================================================
-#  NAME: source_fetch_git
+#  NAME: source_git_get
 #  DESCRIPTION: Fetch source using git.
 #  PARAMETER 1: name
 #  PARAMETER 2: url
 #  PARAMETER 3: branch (optional)
 # =============================================================================
-source_fetch_git () 
+source_git_get () 
 {
 
    if [ $# -lt 2 ]
@@ -112,12 +112,12 @@ source_fetch_git ()
 
 }
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Get source
-#-------------------------------------------------------------------------------
-source_fetch_git "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fusion.git"
-source_fetch_git "flux" "git://git.directfb.org/git/directfb/core/flux.git"
-source_fetch_git "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git" "directfb-1.6"
-source_fetch_git "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
+# ------------------------------------------------------------------------------
+source_git_get "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fusion.git"
+source_git_get "flux" "git://git.directfb.org/git/directfb/core/flux.git"
+source_git_get "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git" "directfb-1.6"
+source_git_get "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
 
 exit 0
