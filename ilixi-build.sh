@@ -151,9 +151,67 @@ source_copy ()
    then
       rm -rf $BUILD/$1
    fi
-   echo -e "\nCopying $1 from source to build ..."
+   echo -e "Copying $1 from source to build."
    cp -r $SOURCE/$1 $BUILD/$1
 }
+
+# === FUNCTION ================================================================
+#  NAME: build_prerequisite_run
+#  DESCRIPTION: Run prerequisite before build 
+#  PARAMETER 1: name
+#  PARAMETER 2: script
+#  PARAMETER 3: paramater (optional)
+# =============================================================================
+build_prerequisite_run()
+{
+
+   if [ $# -lt 2 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+   echo "Running $2 ..."
+   cd $BUILD/$1
+   ./$2 $3
+}
+
+# === FUNCTION ================================================================
+#  NAME: build_configure
+#  DESCRIPTION: Run configure 
+#  PARAMETER 1: name
+#  PARAMETER 2: paramater (optional)
+# =============================================================================
+build_configure()
+{
+
+   if [ $# -lt 1 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+   echo "Configure $1 ..."
+   cd $BUILD/$1
+   ./configure $2
+}
+
+# === FUNCTION ================================================================
+#  NAME: buildi_make
+#  DESCRIPTION: Run make 
+#  PARAMETER 1: name
+#  PARAMETER 2: paramater (optional)
+# =============================================================================
+build_make()
+{
+   if [ $# -lt 1 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+   echo "Make $1 ..."
+   cd $BUILD/$1
+   make $2
+}
+
 
 # ------------------------------------------------------------------------------
 # Get source
@@ -166,9 +224,36 @@ source_git_get "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
 # ------------------------------------------------------------------------------
 # Copy source to build
 # ------------------------------------------------------------------------------
+echo -e "\nCopying sources..."
 source_copy "linux-fusion"
 source_copy "flux"
 source_copy "directfb"
 source_copy "ilixi"
+
+# ------------------------------------------------------------------------------
+# Clean install
+# ------------------------------------------------------------------------------
+echo -e "\nClean install ..."
+rm -Rf $INSTALL/*.*
+
+# ------------------------------------------------------------------------------
+# Build flux
+# ------------------------------------------------------------------------------
+echo -e "\nBuilding flux ..."
+build_prerequisite_run flux autogen.sh
+build_configure flux --prefix=$INSTALL
+build_make flux
+build_make flux install
+
+# ------------------------------------------------------------------------------
+# Build directfb
+# ------------------------------------------------------------------------------
+echo -e "\nBuilding directfb ..."
+(
+export FLUXCOMP=$INSTALL/bin/fluxcomp
+build_prerequisite_run directfb autogen.sh $( --enable-multi --enable-one --enable-network --enable-sawman --enable-fusionsound --enable-fusiondale --prefix=$INSTALL )
+build_make directfb
+)
+build_make directfb install
 
 exit 0
