@@ -133,6 +133,28 @@ source_git_get ()
 
 }
 
+# === FUNCTION ================================================================
+#  NAME: source_copy
+#  DESCRIPTION: Copy from source to build.
+#  PARAMETER 1: name
+# =============================================================================
+source_copy ()
+{
+
+   if [ $# -lt 1 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+   
+   if [ -d $BUILD/$1 ]
+   then
+      rm -rf $BUILD/$1
+   fi
+   echo -e "\nCopying $1 from source to build ..."
+   cp -r $SOURCE/$1 $BUILD/$1
+}
+
 # ------------------------------------------------------------------------------
 # Get source
 # ------------------------------------------------------------------------------
@@ -140,5 +162,13 @@ source_git_get "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fu
 source_git_get "flux" "git://git.directfb.org/git/directfb/core/flux.git"
 source_git_get "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git" "directfb-1.6"
 source_git_get "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
+
+# ------------------------------------------------------------------------------
+# Copy source to build
+# ------------------------------------------------------------------------------
+source_copy "linux-fusion"
+source_copy "flux"
+source_copy "directfb"
+source_copy "ilixi"
 
 exit 0
