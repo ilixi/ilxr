@@ -27,6 +27,21 @@ BUILD=$BASE/build
 INSTALL=$BASE/install
 
 # === FUNCTION ================================================================
+#  NAME: log_error
+#  DESCRIPTION: Log error messages and exit with error.
+#  PARAMETERS: Error messages are printed on new lines.
+# =============================================================================
+log_error ()
+{
+   echo "(!) ${FUNCNAME[ 1 ]} ()"
+   local prefix="    -> "
+   for ln in "$@" ; do
+      echo "${prefix}${ln}"
+   done
+   exit 1
+}
+
+# === FUNCTION ================================================================
 #  NAME: source_git_clone
 #  DESCRIPTION: Clones a git repository.
 #  PARAMETER 1: destdir
@@ -37,8 +52,13 @@ source_git_clone ()
 {
    if [ $# -lt 2 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
+   fi
+
+   git ls-remote $2 &>/dev/null
+   if test $? != 0
+   then
+      log_error "Remote \"$2\" is not valid."
    fi
 
    if [ $# -eq 2 ]
@@ -49,8 +69,7 @@ source_git_clone ()
       then
          git clone -b $3 $2 $1
       else
-         echo "Error: Branch \"$3\" does not exist!"
-         exit 1
+         log_error "Branch \"$3\" does not exist!"
       fi
    fi
 }
@@ -64,8 +83,7 @@ source_git_pull ()
 {
    if [ $# -lt 1 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
    git --git-dir=$1/.git pull
 }
@@ -81,8 +99,7 @@ source_git_get ()
 {
    if [ $# -lt 2 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
 
    if [ -d $SOURCE/$1 ]
@@ -118,8 +135,7 @@ source_copy ()
 {
    if [ $# -lt 1 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
    
    if [ -d $BUILD/$1 ]
@@ -141,8 +157,7 @@ build_prerequisite_run()
 {
    if [ $# -lt 2 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
    echo "Running $2 ..."
    cd $BUILD/$1
@@ -159,8 +174,7 @@ build_configure()
 {
    if [ $# -lt 1 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
    echo "Configure $1 ..."
    cd $BUILD/$1
@@ -177,8 +191,7 @@ build_make()
 {
    if [ $# -lt 1 ]
    then
-      echo "Not enough arguments!"
-      exit 1
+      log_error "Not enough arguments!"
    fi
    echo "Make $1 ..."
    cd $BUILD/$1
