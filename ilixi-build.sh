@@ -64,7 +64,7 @@ source_git_clone ()
    then            
       git clone $2 $1
    else
-      if ! git ls-remote --heads $2 | grep -qE "$3 \$"
+      if git ls-remote --heads $2 | grep -qE "$3\$" 
       then
          git clone -b $3 $2 $1
       else
