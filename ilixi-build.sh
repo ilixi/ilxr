@@ -64,8 +64,7 @@ source_git_clone ()
    then            
       git clone $2 $1
    else
-      local br=$(git ls-remote --heads $2 | grep $3)
-      if [[ "${br}" != "" ]]
+      if ! git ls-remote --heads $2 | grep -qE "$3 \$"
       then
          git clone -b $3 $2 $1
       else
@@ -73,6 +72,23 @@ source_git_clone ()
          exit 1
       fi
    fi
+
+}
+
+# === FUNCTION ================================================================
+#  NAME: source_git_pull
+#  DESCRIPTION: Pull from repositor.
+#  PARAMETER 1: destdir
+# =============================================================================
+source_git_pull ()
+{
+
+   if [ $# -lt 1 ]
+   then
+      echo "Not enough arguments!"
+      exit 1
+   fi
+   git --git-dir=$1/.git pull
 
 }
 
@@ -92,22 +108,27 @@ source_git_get ()
       exit 1
    fi
 
-   local GIT_SOURCE=$SOURCE/$1
-
-   echo -e "\nFetching $1."
-   if [ -d $GIT_SOURCE ]
+   if [ -d $SOURCE/$1 ]
    then
-      if [ $( git rev-parse --resolve-git-dir $GIT_SOURCE/.git ) ]
+      if [ $( git rev-parse --resolve-git-dir $SOURCE/$1/.git ) ]
       then
-         echo "updating..."
-         git --git-dir=$GIT_SOURCE/.git --work-tree=$GIT_SOURCE pull
+         if [ $3 ] && ! git --git-dir=$SOURCE/$1/.git branch | grep -qE "^\* $3\$"
+         then
+            echo -e "\nBranch change. Cloning $1 ..."
+            rm -rf $SOURCE/$1
+            source_git_clone $SOURCE/$1 $2 $3
+         else
+            echo -e "\nUpdating $1 ..."
+            source_git_pull $SOURCE/$1
+	 fi
       else
-         echo "git-dir is not valid."
-         rm -rf $GIT_SOURCE
-         source_git_clone $GIT_SOURCE $2 $3
+         echo -e "\ngit-dir is not valid. Cloning $1 ..."
+         rm -rf $SOURCE/$1
+         source_git_clone $SOURCE/$1 $2 $3
       fi
    else
-      source_git_clone $GIT_SOURCE $2 $3
+      echo -e "\nCloning $1 ..."
+      source_git_clone $SOURCE/$1 $2 $3
    fi
 
 }
