@@ -26,24 +26,6 @@ SOURCE=$BASE/source
 BUILD=$BASE/build
 INSTALL=$BASE/install
 
-# ------------------------------------------------------------------------------
-# Print directory names
-# ------------------------------------------------------------------------------
-echo
-echo "Base directory is $BASE."
-echo "Source directory is $SOURCE."
-echo "Build directory is $BUILD."
-echo "Install directory is $INSTALL."
-
-
-# ------------------------------------------------------------------------------
-# Create directories
-# ------------------------------------------------------------------------------
-echo "Create directories."
-mkdir -p $SOURCE
-mkdir -p $BUILD
-mkdir -p $INSTALL
-
 # === FUNCTION ================================================================
 #  NAME: source_git_clone
 #  DESCRIPTION: Clones a git repository.
@@ -53,7 +35,6 @@ mkdir -p $INSTALL
 # =============================================================================
 source_git_clone () 
 {
-
    if [ $# -lt 2 ]
    then
       echo "Not enough arguments!"
@@ -72,7 +53,6 @@ source_git_clone ()
          exit 1
       fi
    fi
-
 }
 
 # === FUNCTION ================================================================
@@ -82,14 +62,12 @@ source_git_clone ()
 # =============================================================================
 source_git_pull ()
 {
-
    if [ $# -lt 1 ]
    then
       echo "Not enough arguments!"
       exit 1
    fi
    git --git-dir=$1/.git pull
-
 }
 
 # === FUNCTION ================================================================
@@ -101,7 +79,6 @@ source_git_pull ()
 # =============================================================================
 source_git_get () 
 {
-
    if [ $# -lt 2 ]
    then
       echo "Not enough arguments!"
@@ -110,9 +87,9 @@ source_git_get ()
 
    if [ -d $SOURCE/$1 ]
    then
-      if [ $( git rev-parse --resolve-git-dir $SOURCE/$1/.git ) ]
+      if git rev-parse --resolve-git-dir $SOURCE/$1/.git > /dev/null
       then
-         if [ $3 ] && ! git --git-dir=$SOURCE/$1/.git branch | grep -qE "^\* $3\$"
+         if [ $3 ] && ! git --git-dir=$SOURCE/$1/.git branch | grep -qE "$3\$"
          then
             echo -e "\nBranch change. Cloning $1 ..."
             rm -rf $SOURCE/$1
@@ -130,7 +107,6 @@ source_git_get ()
       echo -e "\nCloning $1 ..."
       source_git_clone $SOURCE/$1 $2 $3
    fi
-
 }
 
 # === FUNCTION ================================================================
@@ -140,7 +116,6 @@ source_git_get ()
 # =============================================================================
 source_copy ()
 {
-
    if [ $# -lt 1 ]
    then
       echo "Not enough arguments!"
@@ -164,7 +139,6 @@ source_copy ()
 # =============================================================================
 build_prerequisite_run()
 {
-
    if [ $# -lt 2 ]
    then
       echo "Not enough arguments!"
@@ -183,7 +157,6 @@ build_prerequisite_run()
 # =============================================================================
 build_configure()
 {
-
    if [ $# -lt 1 ]
    then
       echo "Not enough arguments!"
@@ -212,6 +185,23 @@ build_make()
    make $2
 }
 
+# ------------------------------------------------------------------------------
+# Print directory names
+# ------------------------------------------------------------------------------
+echo
+echo "Base directory is $BASE."
+echo "Source directory is $SOURCE."
+echo "Build directory is $BUILD."
+echo "Install directory is $INSTALL."
+
+
+# ------------------------------------------------------------------------------
+# Create directories
+# ------------------------------------------------------------------------------
+echo "Create directories."
+mkdir -p $SOURCE
+mkdir -p $BUILD
+mkdir -p $INSTALL
 
 # ------------------------------------------------------------------------------
 # Get source
