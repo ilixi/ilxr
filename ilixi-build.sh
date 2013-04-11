@@ -78,7 +78,7 @@ source_git_clone ()
 
 # === FUNCTION ================================================================
 #  NAME: source_git_get
-#  DESCRIPTION: Fetch source using git.
+#  DESCRIPTION: Clone or pull source using git.
 #  PARAMETER 1: name
 #  PARAMETER 2: url
 #  PARAMETER 3: branch (optional)
