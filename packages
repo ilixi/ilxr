@@ -1,0 +1,29 @@
+; ----------------------------------------------------------------------------------------
+; A package is defined using square brackets and can have the following key, value pairs:
+; source - git, tar
+; depends - autoconf simply runs autogen. other packages are passed to configuration.
+; install - stuff that gets installed and used later.
+; pre_build - apply patches, create files, etc.
+; options - specify configuration options, if any
+; post_install - run helper script, e.g. install_modules.
+; ----------------------------------------------------------------------------------------
+
+[linux-fusion]
+source=git://git.directfb.org/git/directfb/core/linux-fusion.git
+;source=http://www.directfb.org/downloads/Core/linux-fusion/linux-fusion-9.0.0.tar.gz
+post_install=./install_modules.sh fusion linux-one
+
+[flux]
+source=git://git.directfb.org/git/directfb/core/flux.git
+depends=autoconf
+install=/bin/fluxcomp
+
+[directfb]
+source="git://git.directfb.org/git/directfb/core/DirectFB.git directfb-1.6" ; << branch is used here
+depends=autoconf,flux
+options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
+
+[ilixi]
+depends=autoconf,directfb
+source=git://git.directfb.org/git/directfb/libs/ilixi.git
+options="--enable-fusiondale --enable-fusionsound --enable-sawman --with-examples"

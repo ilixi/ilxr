@@ -24,7 +24,9 @@
 BASE=${PWD}/ilixi
 SOURCE=$BASE/source
 BUILD=$BASE/build
+LOG=$BASE/log
 INSTALL=$BASE/install
+JOBS=8
 
 # === FUNCTION ================================================================
 #  NAME: log_error
@@ -176,26 +178,124 @@ build_configure()
    then
       log_error "Not enough arguments!"
    fi
-   echo "Configure $1 ..."
    cd $BUILD/$1
-   ./configure $2
+   if [ ! -f configure.sh ]
+   then
+      echo "Running autoreconf..."
+      autoreconf -fi &>/dev/null
+   fi
+   echo "Configuring..."
+   saveIFS=$IFS
+   IFS=' '
+   ./configure $2 --prefix=$INSTALL &>"$LOG/$1.configure.log"
+   if [ $? -ne 0 ]
+   then
+     log_error "Configure error."
+   fi
+   IFS=$saveIFS
 }
 
 # === FUNCTION ================================================================
-#  NAME: buildi_make
+#  NAME: build_make
 #  DESCRIPTION: Run make 
 #  PARAMETER 1: name
 #  PARAMETER 2: paramater (optional)
 # =============================================================================
 build_make()
 {
-   if [ $# -lt 1 ]
+   step="build"
+   if [ $# -eq 0 ]
    then
       log_error "Not enough arguments!"
+   elif [ $# -eq 2 ]
+   then
+      step="install"
    fi
-   echo "Make $1 ..."
+   echo $step"..."
    cd $BUILD/$1
-   make $2
+   make -j$JOBS $2 &>"$LOG/$1.$step.log"
+   if [ $? -ne 0 ]
+   then
+     log_error "Could not $step."
+   fi
+}
+
+# === FUNCTION ================================================================
+#  NAME: package_parser
+#  DESCRIPTION: Parse packages file and declare variables
+#  PARAMETER 1: package file
+# =============================================================================
+package_parser ()
+{
+   if [ ! -f $1 ]
+   then
+      log_error "file \"$1\" does not exist."
+   fi
+
+   ini="$(<$1)"
+   ini="${ini//[/\[}"
+   ini="${ini//]/\]}"
+   IFS=$'\n' && ini=( ${ini} )
+   ini=( ${ini[*]//;*/} )
+   ini=( ${ini[*]/\    =/=} )
+   ini=( ${ini[*]/=\   /=} )
+   ini=( ${ini[*]/\ =\ /=} )
+   ini=( ${ini[*]/#\\[/\}$'\n'package.} )
+   ini=( ${ini[*]/%\\]/ \(} )
+   ini=( ${ini[*]/=/=\( } )
+   ini=( ${ini[*]/%/ \)} )
+   ini=( ${ini[*]/%\\ \)/ \\} )
+   ini=( ${ini[*]/%\( \)/\(\) \{} )
+   ini=( ${ini[*]/%\} \)/\}} )
+   ini[0]=""
+   ini[${#ini[*]} + 1]='}'
+   eval "$(echo "${ini[*]}")"
+}
+
+# === FUNCTION ================================================================
+#  NAME: package_do
+#  DESCRIPTION: Fetch, build and install a package
+#  PARAMETER 1: Package name
+# =============================================================================
+package_do ()
+{   
+   package.$1
+   if [ -z "$source" ]
+   then
+      log_error "Source for $1 is null!"
+   fi
+
+   saveIFS=$IFS
+   IFS=' '
+   source_git_get $1 $source
+   IFS=$saveIFS
+   source_copy $1
+
+   if [ ! -z "$pre_build" ]
+   then
+     build_prerequisite_run $1 $pre_build
+   fi
+
+   if [ ! -z $depends ] && [[ $depends =~ .*autoconf.* ]]
+   then
+     build_configure $1 $options
+   fi  
+
+   build_make $1
+
+   if [ ! -z "$install" ]
+   then
+     rm -rf $INSTALL$install
+   fi
+
+   build_make $1 install
+
+   source=
+   depends=
+   install=
+   pre_build=
+   options=
+   post_install=
 }
 
 # ------------------------------------------------------------------------------
@@ -215,48 +315,13 @@ echo "Create directories."
 mkdir -p $SOURCE
 mkdir -p $BUILD
 mkdir -p $INSTALL
+mkdir -p $LOG
 
-# ------------------------------------------------------------------------------
-# Get source
-# ------------------------------------------------------------------------------
-source_git_get "linux-fusion" "git://git.directfb.org/git/directfb/core/linux-fusion.git"
-source_git_get "flux" "git://git.directfb.org/git/directfb/core/flux.git"
-source_git_get "directfb" "git://git.directfb.org/git/directfb/core/DirectFB.git" "directfb-1.6"
-source_git_get "ilixi" "git://git.directfb.org/git/directfb/libs/ilixi.git"
+package_parser "packages"
 
-# ------------------------------------------------------------------------------
-# Copy source to build
-# ------------------------------------------------------------------------------
-echo -e "\nCopying sources..."
-source_copy "linux-fusion"
-source_copy "flux"
-source_copy "directfb"
-source_copy "ilixi"
-
-# ------------------------------------------------------------------------------
-# Clean install
-# ------------------------------------------------------------------------------
-echo -e "\nClean install ..."
-rm -Rf $INSTALL/*.*
-
-# ------------------------------------------------------------------------------
-# Build flux
-# ------------------------------------------------------------------------------
-echo -e "\nBuilding flux ..."
-build_prerequisite_run flux autogen.sh
-build_configure flux --prefix=$INSTALL
-build_make flux
-build_make flux install
-
-# ------------------------------------------------------------------------------
-# Build directfb
-# ------------------------------------------------------------------------------
-echo -e "\nBuilding directfb ..."
-(
-export FLUXCOMP=$INSTALL/bin/fluxcomp
-build_prerequisite_run directfb autogen.sh $( --enable-multi --enable-one --enable-network --enable-sawman --enable-fusionsound --enable-fusiondale --prefix=$INSTALL )
-build_make directfb
-)
-build_make directfb install
+# package_do "linux-fusion"
+package_do "flux"
+package_do "directfb"
+package_do "ilixi"
 
 exit 0
