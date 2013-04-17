@@ -204,33 +204,32 @@ build_configure()
 # =============================================================================
 build_make()
 {
-   step="build"
    if [ $# -lt 1 ]
    then
       log_error "Not enough arguments!"
    fi
 
-   if [ -z "$2" ]
-   then
-      step="install"
-   fi
-
    cd $BUILD/$1
 
-   make -j$JOBS &>"$LOG/$1.log"
+   echo "Building..."
+   make -j$JOBS &>"$LOG/$1.build.log"
 
-   echo $step"..."
- 
-   if [ -z "$3" ]
+   if [ $? -ne 0 ]
    then
-      sudo make -j$JOBS $2 &>"$LOG/$1.$step.log"
+     log_error "Could not build!"
+   fi
+ 
+   echo "Installing..."
+   if [ -z "$2" ]
+   then
+      sudo make -j$JOBS install &>"$LOG/$1.install.log"
    else
-      make -j$JOBS $2 &>"$LOG/$1.$step.log"
+      make -j$JOBS install &>"$LOG/$1.install.log"
    fi
 
    if [ $? -ne 0 ]
    then
-     log_error "Could not $step."
+     log_error "Could not install!"
    fi
 }
 
@@ -295,22 +294,23 @@ package_do ()
      build_configure $1 $options
    fi  
 
-   build_make $1
-
    if [ ! -z "$install" ]
    then
-      if [ -z "$sudo_install" ]
-      then
-         build_make $1 install 1
-      else
-         rm -rf $INSTALL$install
-         build_make $1 install
-      fi
+      rm -rf $INSTALL$install
    fi
+
+   if [ -z "$sudo_install" ]
+   then
+      build_make $1 1
+   else
+      build_make $1
+   fi
+
    if [ ! -z "$install" ]
    then
       eval $post_install
    fi
+
    source=
    depends=
    sudo_install=
