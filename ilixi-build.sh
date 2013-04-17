@@ -307,7 +307,10 @@ package_do ()
          build_make $1 install
       fi
    fi
-
+   if [ ! -z "$install" ]
+   then
+      eval $post_install
+   fi
    source=
    depends=
    sudo_install=

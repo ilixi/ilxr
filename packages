@@ -10,16 +10,16 @@
 
 [linux-fusion]
 source=git://git.directfb.org/git/directfb/core/linux-fusion.git
-;source=http://www.directfb.org/downloads/Core/linux-fusion/linux-fusion-9.0.0.tar.gz
-post_install=./install_modules.sh fusion linux-one
+sudo_install=1
 
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
 depends=autoconf
 install=/bin/fluxcomp
+post_install="export FLUXCOMP=\$INSTALL\bin\fluxcomp"
 
 [directfb]
-source="git://git.directfb.org/git/directfb/core/DirectFB.git directfb-1.6" ; << branch is used here
+source="git://git.directfb.org/git/directfb/core/DirectFB.git" ; << branch is used here
 depends=autoconf,flux
 options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
 
