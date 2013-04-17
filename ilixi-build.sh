@@ -200,20 +200,34 @@ build_configure()
 #  DESCRIPTION: Run make 
 #  PARAMETER 1: name
 #  PARAMETER 2: paramater (optional)
+#  PARAMETER 3: paramater (optional)
 # =============================================================================
 build_make()
 {
    step="build"
-   if [ $# -eq 0 ]
+   if [ $# -lt 1 ]
    then
       log_error "Not enough arguments!"
-   elif [ $# -eq 2 ]
+   fi
+
+   if [ -z "$2" ]
    then
       step="install"
    fi
-   echo $step"..."
+
    cd $BUILD/$1
-   make -j$JOBS $2 &>"$LOG/$1.$step.log"
+
+   make -j$JOBS &>"$LOG/$1.log"
+
+   echo $step"..."
+ 
+   if [ -z "$3" ]
+   then
+      sudo make -j$JOBS $2 &>"$LOG/$1.$step.log"
+   else
+      make -j$JOBS $2 &>"$LOG/$1.$step.log"
+   fi
+
    if [ $? -ne 0 ]
    then
      log_error "Could not $step."
@@ -285,13 +299,18 @@ package_do ()
 
    if [ ! -z "$install" ]
    then
-     rm -rf $INSTALL$install
+      if [ -z "$sudo_install" ]
+      then
+         build_make $1 install 1
+      else
+         rm -rf $INSTALL$install
+         build_make $1 install
+      fi
    fi
-
-   build_make $1 install
 
    source=
    depends=
+   sudo_install=
    install=
    pre_build=
    options=
@@ -319,7 +338,7 @@ mkdir -p $LOG
 
 package_parser "packages"
 
-# package_do "linux-fusion"
+package_do "linux-fusion"
 package_do "flux"
 package_do "directfb"
 package_do "ilixi"
