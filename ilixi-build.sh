@@ -179,18 +179,26 @@ build_configure()
       log_error "Not enough arguments!"
    fi
    cd $BUILD/$1
+
    if [ ! -f configure.sh ]
    then
       echo "Running autoreconf..."
-      autoreconf -fi &>/dev/null
+      autoreconf -fi &>"$LOG/$1.autoreconf.log"
    fi
+
+   if [ $? -ne 0 ]
+   then
+     log_error "Autoreconf error." "see $LOG/$1.autoreconf.log"
+   fi
+
    echo "Configuring..."
    saveIFS=$IFS
    IFS=' '
    ./configure $2 --prefix=$INSTALL &>"$LOG/$1.configure.log"
+
    if [ $? -ne 0 ]
    then
-     log_error "Configure error."
+     log_error "Configure error." "see $LOG/$1.configure.log"
    fi
    IFS=$saveIFS
 }
@@ -216,7 +224,7 @@ build_make()
 
    if [ $? -ne 0 ]
    then
-     log_error "Could not build!"
+     log_error "Could not build!" "see $LOG/$1.build.log"
    fi
  
    echo "Installing..."
@@ -229,7 +237,7 @@ build_make()
 
    if [ $? -ne 0 ]
    then
-     log_error "Could not install!"
+     log_error "Could not install!" "see $LOG/$1.install.log"
    fi
 }
 
