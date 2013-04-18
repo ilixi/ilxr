@@ -25,6 +25,7 @@
 BASE=${PWD}/ilxr
 PACKAGE=packages
 JOBS=8
+PACKAGE_LIST=
 
 # === FUNCTION ================================================================
 #  NAME: usage
@@ -262,6 +263,8 @@ package_parser ()
       log_error "file \"$1\" does not exist."
    fi
 
+   PACKAGE_LIST=`grep "^\[" $1 | sed 's/\[\([^]]*\)\]/\\1/g'`
+
    ini="$(<$1)"
    ini="${ini//[/\[}"
    ini="${ini//]/\]}"
@@ -414,10 +417,9 @@ export PATH="$INSTALL/bin:$PATH"
 
 package_parser $PACKAGE
 
-package_do "linux-fusion"
-package_do "flux"
-package_do "directfb"
-package_do "ilixi"
+for package in $PACKAGE_LIST
+   do package_do "$package" # :)
+done
 
 echo -e "done.\n"
 
