@@ -150,24 +150,6 @@ source_copy ()
 }
 
 # === FUNCTION ================================================================
-#  NAME: build_prerequisite_run
-#  DESCRIPTION: Run prerequisite before build 
-#  PARAMETER 1: name
-#  PARAMETER 2: script
-#  PARAMETER 3: paramater (optional)
-# =============================================================================
-build_prerequisite_run()
-{
-   if [ $# -lt 2 ]
-   then
-      log_error "Not enough arguments!"
-   fi
-   echo "Running $2 ..."
-   cd $BUILD/$1
-   ./$2 $3
-}
-
-# === FUNCTION ================================================================
 #  NAME: build_configure
 #  DESCRIPTION: Run configure 
 #  PARAMETER 1: name
@@ -209,7 +191,6 @@ build_configure()
 #  DESCRIPTION: Run make 
 #  PARAMETER 1: name
 #  PARAMETER 2: paramater (optional)
-#  PARAMETER 3: paramater (optional)
 # =============================================================================
 build_make()
 {
@@ -281,6 +262,8 @@ package_parser ()
 # =============================================================================
 package_do ()
 {   
+
+   cd $BASE
    package.$1
    if [ -z "$source" ]
    then
@@ -295,18 +278,18 @@ package_do ()
 
    if [ ! -z "$pre_build" ]
    then
-     build_prerequisite_run $1 $pre_build
+      echo "Evaluating pre_build"
+      eval $pre_build &>"$LOG/$1.prebuild.log"
+      if [ $? -ne 0 ]
+      then
+        log_error "Could evaluate pre_build!" "see $LOG/$1.install.log"
+      fi
    fi
 
    if [ ! -z $depends ] && [[ $depends =~ .*autoconf.* ]]
    then
      build_configure $1 $options
    fi  
-
-   if [ ! -z "$install" ]
-   then
-      rm -rf $INSTALL$install
-   fi
 
    if [ -z "$sudo_install" ]
    then
@@ -317,7 +300,12 @@ package_do ()
 
    if [ ! -z "$post_install" ]
    then
-      eval $post_install
+      echo "Evaluating post_install"
+      eval $post_install &>"$LOG/$1.postinstall.log"
+      if [ $? -ne 0 ]
+      then
+        log_error "Could evaluate post_install!" "see $LOG/$1.install.log"
+      fi
    fi
 
    source=
@@ -338,6 +326,15 @@ echo "Source directory is $SOURCE."
 echo "Build directory is $BUILD."
 echo "Install directory is $INSTALL."
 
+
+# ------------------------------------------------------------------------------
+# Purge $INSTALL
+# ------------------------------------------------------------------------------
+echo "Purge install directories from last build."
+if [ -d $INSTALL ]
+then
+   rm -rf $INSTALL
+fi
 
 # ------------------------------------------------------------------------------
 # Create directories

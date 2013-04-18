@@ -1,0 +1,5 @@
+--- flux_comp_sawman.make	2013-04-18 09:43:58.012300415 +0300
++++ flux_comp_sawman.make.new	2013-04-18 09:42:27.075849557 +0300
+@@ -0,0 +1,2 @@
++$(builddir)/%.cpp $(builddir)/%.h: $(srcdir)/%.flux
++	$(FLUXCOMP) -i --call-mode --static-args-bytes=FLUXED_ARGS_BYTES --dispatch-error-abort $<
