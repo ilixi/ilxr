@@ -1,0 +1,8 @@
+Implement tarball support
+- download to dl/<file>
+- extract to source/<file>
+
+Local archive/file support
+
+Create files in an organised manner using package fields, e.g. directfbrc or udev rules
+
