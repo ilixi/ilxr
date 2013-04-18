@@ -15,11 +15,9 @@ sudo_install=1
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
 depends=autoconf
-post_install="export FLUXCOMP=\$INSTALL/bin/fluxcomp"
 
 [directfb]
 source="git://git.directfb.org/git/directfb/core/DirectFB.git" ; << branch is used here
-pre_build="patch -i ../patch/c9ac4acef33ad83b4d97d5a1daa187dbf71aba94.patch -o build/directfb/rules/flux_comp_sawman.make"
 depends=autoconf,flux
 options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
 
