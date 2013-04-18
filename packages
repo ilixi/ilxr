@@ -17,7 +17,7 @@ source=git://git.directfb.org/git/directfb/core/flux.git
 depends=autoconf
 
 [directfb]
-source="git://git.directfb.org/git/directfb/core/DirectFB.git" ; << branch is used here
+source="git://git.directfb.org/git/directfb/core/DirectFB.git directfb-1.6" ; << branch is used here
 depends=autoconf,flux
 options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
 
