@@ -23,10 +23,6 @@
 # ==============================================================================
 
 BASE=${PWD}/ilxr
-SOURCE=$BASE/source
-BUILD=$BASE/build
-LOG=$BASE/log
-INSTALL=$BASE/install
 PACKAGE=packages
 JOBS=8
 
@@ -382,6 +378,11 @@ echo "Packgage file: $PACKAGE"
 echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
 
+SOURCE=$BASE/source
+BUILD=$BASE/build
+LOG=$BASE/log
+INSTALL=$BASE/install
+
 # Purge $INSTALL
 if [ -d $INSTALL ]
 then
@@ -392,9 +393,28 @@ fi
 # Create directories
 echo "Creating directories."
 mkdir -p $SOURCE
+if [ $? -ne 0 ]
+then
+     exit 1
+fi
+
 mkdir -p $BUILD
+if [ $? -ne 0 ]
+then
+     exit 1
+fi
+
 mkdir -p $INSTALL
+if [ $? -ne 0 ]
+then
+     exit 1
+fi
+
 mkdir -p $LOG
+if [ $? -ne 0 ]
+then
+     exit 1
+fi
 
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
