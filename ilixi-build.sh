@@ -51,11 +51,24 @@ EOF
 log_error ()
 {
    echo "(!) ${FUNCNAME[ 1 ]} ()"
-   local prefix="    -> "
    for ln in "$@" ; do
-      echo "${prefix}${ln}"
+      echo "    -> ${ln}"
    done
    exit 1
+}
+
+mk_dir()
+{
+   if [ $# -lt 1 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+
+   mkdir -p $1
+   if [ $? -ne 0 ]
+   then
+      log_error "Could not create directory!"
+   fi
 }
 
 # === FUNCTION ================================================================
@@ -318,7 +331,7 @@ package_do ()
       eval $post_install &>"$LOG/$1.postinstall.log"
       if [ $? -ne 0 ]
       then
-        log_error "Could evaluate post_install!" "see $LOG/$1.install.log"
+        log_error "Could not evaluate post_install!" "see $LOG/$1.install.log"
       fi
    fi
 
@@ -368,8 +381,7 @@ fi
 
 if [ ! -d $BASE ]
 then
-   echo "  Invalid directory: $BASE"
-   exit 1
+   mk_dir $BASE
 fi
 
 # Print info
@@ -392,29 +404,10 @@ fi
 
 # Create directories
 echo "Creating directories."
-mkdir -p $SOURCE
-if [ $? -ne 0 ]
-then
-     exit 1
-fi
-
-mkdir -p $BUILD
-if [ $? -ne 0 ]
-then
-     exit 1
-fi
-
-mkdir -p $INSTALL
-if [ $? -ne 0 ]
-then
-     exit 1
-fi
-
-mkdir -p $LOG
-if [ $? -ne 0 ]
-then
-     exit 1
-fi
+mk_dir $SOURCE
+mk_dir $BUILD
+mk_dir $INSTALL
+mk_dir $LOG
 
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
