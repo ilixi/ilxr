@@ -1,10 +1,10 @@
 # !/bin/bash
 # ===============================================================================
-# FILE		: ilixi-build.sh
-# AUTHORS	: A. Erdem Budak
-#		: M. Tarık Sekmen
-# USAGE		:
-# DESCRIPTION	:
+# FILE		: ilxr.sh
+# AUTHORS	: A. Erdem Budak <>,
+#		  Tarik Sekmen <tarik@ilixi.org>
+# DESCRIPTION	: A simple bash script to help install ilixi and its dependencies 
+#                 on your system. Visit http://www.ilixi.org for more info.
 #
 # LICENSE
 #  
@@ -22,12 +22,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
 
-BASE=${PWD}/ilixi
+BASE=${PWD}/ilxr
 SOURCE=$BASE/source
 BUILD=$BASE/build
 LOG=$BASE/log
 INSTALL=$BASE/install
+PACKAGE=packages
 JOBS=8
+
+# === FUNCTION ================================================================
+#  NAME: usage
+#  DESCRIPTION: Prints command line options and usage information.
+# =============================================================================
+usage()
+{
+cat << EOF
+usage: $0 options
+
+OPTIONS:
+   -h                    Show this message
+   -i <package_file>     Use given package file
+   -d <directory>        Destination directory
+   -j <#>                Jobs for parallel build, default=$JOBS
+EOF
+}
 
 # === FUNCTION ================================================================
 #  NAME: log_error
@@ -318,28 +336,61 @@ package_do ()
 }
 
 # ------------------------------------------------------------------------------
-# Print directory names
-# ------------------------------------------------------------------------------
-echo
-echo "Base directory is $BASE."
-echo "Source directory is $SOURCE."
-echo "Build directory is $BUILD."
-echo "Install directory is $INSTALL."
+# Parse cmd line options
+while getopts "hi:d:j:" OPTION
+do
+   case $OPTION in
+      h)
+         usage
+         exit 1
+         ;;
+      i)
+         PACKAGE=$OPTARG
+         ;;
+      d)
+         BASE=$OPTARG
+         ;;
+      j)
+         JOBS=$OPTARG
+         ;;
+      :)
+         echo "Option -$OPTARG requires an argument."
+         exit 1
+         ;;
+      \?)
+         usage
+         exit 1
+         ;;
+   esac
+done
 
+if [ ! -f $PACKAGE ]
+then
+   echo "  Invalid package: $PACKAGE"
+   exit 1
+fi
 
-# ------------------------------------------------------------------------------
+if [ ! -d $BASE ]
+then
+   echo "  Invalid directory: $BASE"
+   exit 1
+fi
+
+# Print info
+echo -e "ilxr v0.1\n"
+echo "Packgage file: $PACKAGE"
+echo "Jobs: $JOBS"
+echo -e "Base directory: $BASE\n"
+
 # Purge $INSTALL
-# ------------------------------------------------------------------------------
-echo "Purge install directories from last build."
 if [ -d $INSTALL ]
 then
+   echo "Purging install directories from last build."
    rm -rf $INSTALL
 fi
 
-# ------------------------------------------------------------------------------
 # Create directories
-# ------------------------------------------------------------------------------
-echo "Create directories."
+echo "Creating directories."
 mkdir -p $SOURCE
 mkdir -p $BUILD
 mkdir -p $INSTALL
@@ -348,11 +399,13 @@ mkdir -p $LOG
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
 
-package_parser "packages"
+package_parser $PACKAGE
 
 package_do "linux-fusion"
 package_do "flux"
 package_do "directfb"
 package_do "ilixi"
+
+echo -e "done.\n"
 
 exit 0
