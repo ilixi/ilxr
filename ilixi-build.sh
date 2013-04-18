@@ -315,7 +315,7 @@ package_do ()
       build_make $1
    fi
 
-   if [ ! -z "$install" ]
+   if [ ! -z "$post_install" ]
    then
       eval $post_install
    fi
