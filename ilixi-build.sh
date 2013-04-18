@@ -345,7 +345,6 @@ mkdir -p $BUILD
 mkdir -p $INSTALL
 mkdir -p $LOG
 
-export LD_LIBRARY_PATH="$INSTALL/lib/"
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
 
