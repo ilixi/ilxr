@@ -1,7 +1,8 @@
 # !/bin/bash
 # ===============================================================================
 # FILE		: ilixi-build.sh
-# AUTHOR	: Armağan Erdem Budak
+# AUTHORS	: A. Erdem Budak
+#		: M. Tarık Sekmen
 # USAGE		:
 # DESCRIPTION	:
 #
