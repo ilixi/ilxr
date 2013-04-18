@@ -16,7 +16,7 @@ sudo_install=1
 source=git://git.directfb.org/git/directfb/core/flux.git
 depends=autoconf
 install=/bin/fluxcomp
-post_install="export FLUXCOMP=$INSTALL/bin/fluxcomp"
+post_install="export FLUXCOMP=\$INSTALL/bin/fluxcomp"
 
 [directfb]
 source="git://git.directfb.org/git/directfb/core/DirectFB.git" ; << branch is used here
