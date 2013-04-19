@@ -1,7 +1,7 @@
 # !/bin/bash
 # ===============================================================================
 # FILE		: ilxr.sh
-# AUTHORS	: A. Erdem Budak <>,
+# AUTHORS	: A. Erdem Budak <ebudak@rhun.net>,
 #		  Tarik Sekmen <tarik@ilixi.org>
 # DESCRIPTION	: A simple bash script to help install ilixi and its dependencies 
 #                 on your system. Visit http://www.ilixi.org for more info.
@@ -158,6 +158,33 @@ source_git_get ()
 }
 
 # === FUNCTION ================================================================
+#  NAME: source_http_get
+#  DESCRIPTION: Get source using http.
+#  PARAMETER 1: name
+#  PARAMETER 2: url
+#  PARAMETER 3: filename
+# =============================================================================
+source_http_get () 
+{
+   if [ $# -lt 2 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+
+   echo -e "\nDownloadin $1 ..."
+
+   if [ ! -d $SOURCE/$1 ]
+   then
+      mkdir -p $SOURCE/$1
+   fi
+
+   if [ ! -f $SOURCE/$1/$3 ]
+   then
+      curl -o $SOURCE/$1/$3 $2
+   fi
+}
+
+# === FUNCTION ================================================================
 #  NAME: source_copy
 #  DESCRIPTION: Copy from source to build.
 #  PARAMETER 1: name
@@ -174,7 +201,41 @@ source_copy ()
       rm -rf $BUILD/$1
    fi
    echo -e "Copying $1 from source to build."
-   cp -r $SOURCE/$1 $BUILD/$1
+   cp -r $SOURCE/$1 $BUILD/$1 &>"$LOG/$1.copy.log"
+}
+
+# === FUNCTION ================================================================
+#  NAME: source_extract
+#  DESCRIPTION: Extract from source to build.
+#  PARAMETER 1: name
+#  PARAMETER 2: filename
+# =============================================================================
+source_extract ()
+{
+   if [ $# -lt 2 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+   
+   if [ -d $BUILD/$1 ]
+   then
+      rm -rf $BUILD/$1
+   fi
+   mkdir -p $BUILD/$1
+
+   echo -e "Extracting $1/$2 to build."
+   if [[ $2 == *.tar ]]
+   then
+      tar --directory=$BUILD/$1 --strip 1 -xf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+   elif [[ $2 == *.tar.gz ]]
+   then
+      tar --directory=$BUILD/$1 --strip 1 -zxf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+   elif [[ $2 == *.tar.bz2 ]]
+   then
+      tar --directory=$BUILD/$1 --strip 1 -jxf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+   else
+      echo "unknown file"
+   fi
 }
 
 # === FUNCTION ================================================================
@@ -301,10 +362,20 @@ package_do ()
    fi
 
    saveIFS=$IFS
-   IFS=' '
-   source_git_get $1 $source
+   IFS=' '  
+
+   if [[ $source == *.git ]]
+   then
+      source_git_get $1 $source
+      source_copy $1
+   else
+      AFTER_SLASH=${source##*/}
+      filename=${AFTER_SLASH%%\?*}
+      source_http_get $1 $source $filename
+      source_extract $1 $filename
+   fi
+
    IFS=$saveIFS
-   source_copy $1
 
    if [ ! -z "$pre_build" ]
    then
