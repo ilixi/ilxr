@@ -1,4 +1,26 @@
+ilxr v0.2
+
 Local archive/file support
+- Extract local archive if source="file://ilixi.tar.gz"
+- Apply local patch if source="file://001.patch"
+- Search for file in ./dl/<package>
 
-Create files in an organised manner using package fields, e.g. directfbrc or udev rules
+Create files in an organised manner using package fields, e.g. directfbrc or udev rules.
+- files=".directfbrc:~/ \
+	 .sawmanrc:~/ \
+	 40-fusion.rules:/etc/udev/rules.d \
+	 40-one.rules:/etc/udev/rules.d \
+	"
 
+Changes to filesystem structure.
+- ilxr
+   |
+   +--- dl (for archives, patches, etc.)
+   |     |
+   |     +--- <package> (source and patches)
+   |     |
+   |     +--- git/<package> (branch is cloned)
+   |
+   +--- install (can be a custom directory where all packages are installed)
+   |
+   +--- work (staging directory where patching and build takes place)

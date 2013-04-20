@@ -58,7 +58,12 @@ log_error ()
    exit 1
 }
 
-mk_dir()
+# === FUNCTION ================================================================
+#  NAME: mk_dir
+#  DESCRIPTION: Create directory
+#  PARAMETER1 : destdir
+# =============================================================================
+mk_dir ()
 {
    if [ $# -lt 1 ]
    then
@@ -70,6 +75,34 @@ mk_dir()
    then
       log_error "Could not create directory!"
    fi
+}
+
+# === FUNCTION ================================================================
+#  NAME: check_deps
+#  DESCRIPTION: Checks if given package(s) is installed, if not installs it
+#               using package manager.
+#  PARAMETER1 : space seperated list of packages
+# =============================================================================
+check_deps ()
+{
+   echo "Checking for dependencies..."
+   saveIFS=$IFS
+   IFS=' '  
+   for package in $1; do
+      local package_version=$(dpkg-query -W -f='${Version}' $package)
+      if [ -z $package_version ]
+      then
+         echo "Installing $package..."
+         sudo apt-get --force-yes --yes install $package &>/dev/null
+         if [ $? -ne 0 ]
+         then
+            log_error "Could not install $package!"
+         fi
+      else
+         echo "$package is installed (version $package_version)"
+      fi
+   done
+   IFS=$saveIFS
 }
 
 # === FUNCTION ================================================================
@@ -171,7 +204,7 @@ source_http_get ()
       log_error "Not enough arguments!"
    fi
 
-   echo -e "\nDownloadin $1 ..."
+   echo -e "\nDownloading $1 ..."
 
    if [ ! -d $SOURCE/$1 ]
    then
@@ -353,6 +386,13 @@ package_parser ()
 # =============================================================================
 package_do ()
 {   
+   source=
+   autoconf=
+   depends=
+   sudo_install=
+   pre_build=
+   options=
+   post_install=
 
    cd $BASE
    package.$1
@@ -364,7 +404,7 @@ package_do ()
    saveIFS=$IFS
    IFS=' '  
 
-   if [[ $source == *.git ]]
+   if [[ $source == *.git* ]]
    then
       source_git_get $1 $source
       source_copy $1
@@ -374,8 +414,9 @@ package_do ()
       source_http_get $1 $source $filename
       source_extract $1 $filename
    fi
-
    IFS=$saveIFS
+
+   check_deps $depends
 
    if [ ! -z "$pre_build" ]
    then
@@ -387,7 +428,7 @@ package_do ()
       fi
    fi
 
-   if [ ! -z $depends ] && [[ $depends =~ .*autoconf.* ]]
+   if [ ! -z $autoconf ] && [ $autoconf = "yes" ]
    then
      build_configure $1 $options
    fi  
@@ -408,14 +449,6 @@ package_do ()
         log_error "Could not evaluate post_install!" "see $LOG/$1.install.log"
       fi
    fi
-
-   source=
-   depends=
-   sudo_install=
-   install=
-   pre_build=
-   options=
-   post_install=
 }
 
 # ------------------------------------------------------------------------------
@@ -489,9 +522,14 @@ export PATH="$INSTALL/bin:$PATH"
 package_parser $PACKAGE
 
 for package in $PACKAGE_LIST
-   do package_do "$package" # :)
+   do if [ "$package" == "dependencies" ]
+   then
+      package.dependencies
+      check_deps $depends
+   else
+      package_do "$package"
+   fi
 done
 
-echo -e "done.\n"
-
+echo -e "\ndone.\n"
 exit 0

@@ -1,27 +1,32 @@
 ; ----------------------------------------------------------------------------------------
 ; A package is defined using square brackets and can have the following key, value pairs:
 ; source - git, tar
-; depends - autoconf simply runs autogen. other packages are passed to configuration.
-; install - stuff that gets installed and used later.
+; autoconf - runs autoconfigure
+; depends - list of dependencies which are installed using package manager.
+; sudo_install - package is installed using sudo.
 ; pre_build - apply patches, create files, etc.
 ; options - specify configuration options, if any
 ; post_install - run helper script, e.g. install_modules.
 ; ----------------------------------------------------------------------------------------
+[dependencies]
+depends="build-essential autoconf libtool pkg-config git"
 
 [linux-fusion]
 source=git://git.directfb.org/git/directfb/core/linux-fusion.git
+depends="linux-headers-$(uname -r)"
 sudo_install=1
 
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
-depends=autoconf
+autoconf=yes
 
 [directfb]
 source="git://git.directfb.org/git/directfb/core/DirectFB.git directfb-1.6" ; << branch is used here
-depends=autoconf,flux
+autoconf=yes
 options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
 
 [ilixi]
-depends=autoconf,directfb
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
+depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev"
+autoconf=yes
 options="--enable-fusiondale --enable-fusionsound --enable-sawman --with-examples"
