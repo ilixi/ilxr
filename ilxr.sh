@@ -216,12 +216,12 @@ source_copy ()
       log_error "Not enough arguments!"
    fi
    
-   if [ -d $BUILD/$1 ]
+   if [ -d $WS/$1 ]
    then
-      rm -rf $BUILD/$1
+      rm -rf $WS/$1
    fi
    echo -e "Copying $1 from source to build."
-   cp -r $2 $BUILD/$1 &>"$LOG/$1.copy.log"
+   cp -r $2 $WS/$1 &>"$LOG/$1.copy.log"
 }
 
 # === FUNCTION ================================================================
@@ -237,22 +237,22 @@ source_extract ()
       log_error "Not enough arguments!"
    fi
    
-   if [ -d $BUILD/$1 ]
+   if [ -d $WS/$1 ]
    then
-      rm -rf $BUILD/$1
+      rm -rf $WS/$1
    fi
-   mkdir -p $BUILD/$1
+   mkdir -p $WS/$1
 
    echo -e "Extracting $1/$2 to build."
    if [[ $2 == *.tar ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -xf $DL/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$WS/$1 --strip 1 -xf $DL/$1/$2 &>"$LOG/$1.extract.log"
    elif [[ $2 == *.tar.gz ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -zxf $DL/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$WS/$1 --strip 1 -zxf $DL/$1/$2 &>"$LOG/$1.extract.log"
    elif [[ $2 == *.tar.bz2 ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -jxf $DL/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$WS/$1 --strip 1 -jxf $DL/$1/$2 &>"$LOG/$1.extract.log"
    else
       echo "unknown file"
    fi
@@ -270,7 +270,7 @@ build_configure()
    then
       log_error "Not enough arguments!"
    fi
-   cd $BUILD/$1
+   cd $WS/$1
 
    if [ ! -f configure.sh ]
    then
@@ -308,7 +308,7 @@ build_make()
       log_error "Not enough arguments!"
    fi
 
-   cd $BUILD/$1
+   cd $WS/$1
 
    echo "Building..."
    make -j$JOBS &>"$LOG/$1.build.log"
@@ -485,7 +485,7 @@ echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
 
 DL=$BASE/dl
-BUILD=$BASE/build
+WS=$BASE/build
 LOG=$BASE/log
 INSTALL=$BASE/install
 
@@ -500,7 +500,7 @@ fi
 echo "Creating directories."
 mk_dir $DL
 mk_dir $DL/git
-mk_dir $BUILD
+mk_dir $WS
 mk_dir $INSTALL
 mk_dir $LOG
 
