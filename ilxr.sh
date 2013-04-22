@@ -152,27 +152,27 @@ source_git_get ()
       log_error "Not enough arguments!"
    fi
 
-   if [ -d $DL/$1 ]
+   if [ -d $DL/git/$1 ]
    then
-      if git rev-parse --resolve-git-dir $DL/$1/.git > /dev/null
+      if git rev-parse --resolve-git-dir $DL/git/$1/.git > /dev/null
       then
-         if [ $3 ] && ! git --git-dir=$DL/$1/.git branch | grep -qE "$3\$"
+         if [ $3 ] && ! git --git-dir=$DL/git/$1/.git branch | grep -qE "$3\$"
          then
             echo -e "\nBranch change. Cloning $1 ..."
-            rm -rf $DL/$1
-            source_git_clone $DL/$1 $2 $3
+            rm -rf $DL/git/$1
+            source_git_clone $DL/git/$1 $2 $3
          else
             echo -e "\nUpdating $1 ..."
-            git --git-dir=$1/.git pull
+            git --git-dir=$DL/git/$1/.git pull
 	 fi
       else
          echo -e "\ngit-dir is not valid. Cloning $1 ..."
-         rm -rf $DL/$1
-         source_git_clone $DL/$1 $2 $3
+         rm -rf $DL/git/$1
+         source_git_clone $DL/git/$1 $2 $3
       fi
    else
       echo -e "\nCloning $1 ..."
-      source_git_clone $DL/$1 $2 $3
+      source_git_clone $DL/git/$1 $2 $3
    fi
 }
 
@@ -207,6 +207,7 @@ source_http_get ()
 #  NAME: source_copy
 #  DESCRIPTION: Copy from source to build.
 #  PARAMETER 1: name
+#  PARAMETER 2: sourcedir
 # =============================================================================
 source_copy ()
 {
@@ -220,7 +221,7 @@ source_copy ()
       rm -rf $BUILD/$1
    fi
    echo -e "Copying $1 from source to build."
-   cp -r $DL/$1 $BUILD/$1 &>"$LOG/$1.copy.log"
+   cp -r $2 $BUILD/$1 &>"$LOG/$1.copy.log"
 }
 
 # === FUNCTION ================================================================
@@ -393,7 +394,7 @@ package_do ()
    if [[ $source == *.git* ]]
    then
       source_git_get $1 $source
-      source_copy $1
+      source_copy $1 $DL/git/$1
    else
       AFTER_SLASH=${source##*/}
       filename=${AFTER_SLASH%%\?*}
@@ -498,6 +499,7 @@ fi
 # Create directories
 echo "Creating directories."
 mk_dir $DL
+mk_dir $DL/git
 mk_dir $BUILD
 mk_dir $INSTALL
 mk_dir $LOG
