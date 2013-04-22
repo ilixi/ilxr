@@ -12,15 +12,17 @@ Create files in an organised manner using package fields, e.g. directfbrc or ude
 	 40-one.rules:/etc/udev/rules.d \
 	"
 
-Changes to filesystem structure.
-- ilxr
-   |
-   +--- dl (for archives, patches, etc.)
-   |     |
-   |     +--- <package> (source and patches)
-   |     |
-   |     +--- git/<package> (branch is cloned)
-   |
-   +--- install (can be a custom directory where all packages are installed)
-   |
-   +--- ws (staging directory where patching and build takes place)
+- Changes to filesystem structure.
+ - ilxr
+    |
+    +--- dl (for archives, patches, etc.)
+    |     |
+    |     +--- <package> (source and patches)
+    |     |
+    |     +--- git/<package> (branch is cloned)
+    |
+    +--- install (can be a custom directory where all packages are installed)
+    |
+    +--- ws (staging directory where patching and build takes place)
+
+- Warn user that sudo operation required in the beginning
