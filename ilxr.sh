@@ -139,20 +139,6 @@ source_git_clone ()
 }
 
 # === FUNCTION ================================================================
-#  NAME: source_git_pull
-#  DESCRIPTION: Pull from repositor.
-#  PARAMETER 1: destdir
-# =============================================================================
-source_git_pull ()
-{
-   if [ $# -lt 1 ]
-   then
-      log_error "Not enough arguments!"
-   fi
-   git --git-dir=$1/.git pull
-}
-
-# === FUNCTION ================================================================
 #  NAME: source_git_get
 #  DESCRIPTION: Clone or pull source using git.
 #  PARAMETER 1: name
@@ -177,7 +163,7 @@ source_git_get ()
             source_git_clone $DL/$1 $2 $3
          else
             echo -e "\nUpdating $1 ..."
-            source_git_pull $DL/$1
+            git --git-dir=$1/.git pull
 	 fi
       else
          echo -e "\ngit-dir is not valid. Cloning $1 ..."
