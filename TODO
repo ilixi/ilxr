@@ -23,4 +23,4 @@ Changes to filesystem structure.
    |
    +--- install (can be a custom directory where all packages are installed)
    |
-   +--- work (staging directory where patching and build takes place)
+   +--- ws (staging directory where patching and build takes place)
