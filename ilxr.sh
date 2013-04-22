@@ -166,27 +166,27 @@ source_git_get ()
       log_error "Not enough arguments!"
    fi
 
-   if [ -d $SOURCE/$1 ]
+   if [ -d $DL/$1 ]
    then
-      if git rev-parse --resolve-git-dir $SOURCE/$1/.git > /dev/null
+      if git rev-parse --resolve-git-dir $DL/$1/.git > /dev/null
       then
-         if [ $3 ] && ! git --git-dir=$SOURCE/$1/.git branch | grep -qE "$3\$"
+         if [ $3 ] && ! git --git-dir=$DL/$1/.git branch | grep -qE "$3\$"
          then
             echo -e "\nBranch change. Cloning $1 ..."
-            rm -rf $SOURCE/$1
-            source_git_clone $SOURCE/$1 $2 $3
+            rm -rf $DL/$1
+            source_git_clone $DL/$1 $2 $3
          else
             echo -e "\nUpdating $1 ..."
-            source_git_pull $SOURCE/$1
+            source_git_pull $DL/$1
 	 fi
       else
          echo -e "\ngit-dir is not valid. Cloning $1 ..."
-         rm -rf $SOURCE/$1
-         source_git_clone $SOURCE/$1 $2 $3
+         rm -rf $DL/$1
+         source_git_clone $DL/$1 $2 $3
       fi
    else
       echo -e "\nCloning $1 ..."
-      source_git_clone $SOURCE/$1 $2 $3
+      source_git_clone $DL/$1 $2 $3
    fi
 }
 
@@ -206,14 +206,14 @@ source_http_get ()
 
    echo -e "\nDownloading $1 ..."
 
-   if [ ! -d $SOURCE/$1 ]
+   if [ ! -d $DL/$1 ]
    then
-      mkdir -p $SOURCE/$1
+      mkdir -p $DL/$1
    fi
 
-   if [ ! -f $SOURCE/$1/$3 ]
+   if [ ! -f $DL/$1/$3 ]
    then
-      curl -o $SOURCE/$1/$3 $2
+      curl -o $DL/$1/$3 $2
    fi
 }
 
@@ -234,7 +234,7 @@ source_copy ()
       rm -rf $BUILD/$1
    fi
    echo -e "Copying $1 from source to build."
-   cp -r $SOURCE/$1 $BUILD/$1 &>"$LOG/$1.copy.log"
+   cp -r $DL/$1 $BUILD/$1 &>"$LOG/$1.copy.log"
 }
 
 # === FUNCTION ================================================================
@@ -259,13 +259,13 @@ source_extract ()
    echo -e "Extracting $1/$2 to build."
    if [[ $2 == *.tar ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -xf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$BUILD/$1 --strip 1 -xf $DL/$1/$2 &>"$LOG/$1.extract.log"
    elif [[ $2 == *.tar.gz ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -zxf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$BUILD/$1 --strip 1 -zxf $DL/$1/$2 &>"$LOG/$1.extract.log"
    elif [[ $2 == *.tar.bz2 ]]
    then
-      tar --directory=$BUILD/$1 --strip 1 -jxf $SOURCE/$1/$2 &>"$LOG/$1.extract.log"
+      tar --directory=$BUILD/$1 --strip 1 -jxf $DL/$1/$2 &>"$LOG/$1.extract.log"
    else
       echo "unknown file"
    fi
@@ -497,7 +497,7 @@ echo "Packgage file: $PACKAGE"
 echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
 
-SOURCE=$BASE/source
+DL=$BASE/dl
 BUILD=$BASE/build
 LOG=$BASE/log
 INSTALL=$BASE/install
@@ -511,7 +511,7 @@ fi
 
 # Create directories
 echo "Creating directories."
-mk_dir $SOURCE
+mk_dir $DL
 mk_dir $BUILD
 mk_dir $INSTALL
 mk_dir $LOG
