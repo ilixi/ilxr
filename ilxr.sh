@@ -205,7 +205,7 @@ source_http_get ()
 
 # === FUNCTION ================================================================
 #  NAME: source_copy
-#  DESCRIPTION: Copy from source to build.
+#  DESCRIPTION: Copy from source to ws.
 #  PARAMETER 1: name
 #  PARAMETER 2: sourcedir
 # =============================================================================
@@ -220,13 +220,13 @@ source_copy ()
    then
       rm -rf $WS/$1
    fi
-   echo -e "Copying $1 from source to build."
+   echo -e "Copying $1 from source to ws."
    cp -r $2 $WS/$1 &>"$LOG/$1.copy.log"
 }
 
 # === FUNCTION ================================================================
 #  NAME: source_extract
-#  DESCRIPTION: Extract from source to build.
+#  DESCRIPTION: Extract from source to ws.
 #  PARAMETER 1: name
 #  PARAMETER 2: filename
 # =============================================================================
@@ -243,7 +243,7 @@ source_extract ()
    fi
    mkdir -p $WS/$1
 
-   echo -e "Extracting $1/$2 to build."
+   echo -e "Extracting $1/$2 to ws."
    if [[ $2 == *.tar ]]
    then
       tar --directory=$WS/$1 --strip 1 -xf $DL/$1/$2 &>"$LOG/$1.extract.log"
@@ -485,7 +485,7 @@ echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
 
 DL=$BASE/dl
-WS=$BASE/build
+WS=$BASE/ws
 LOG=$BASE/log
 INSTALL=$BASE/install
 
