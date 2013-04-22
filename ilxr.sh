@@ -38,6 +38,7 @@ usage: $0 options
 
 OPTIONS:
    -h                    Show this message
+   -c                    Clean old build and logs
    -i <package_file>     Use given package file
    -d <directory>        Destination directory
    -j <#>                Jobs for parallel build, default=$JOBS
@@ -438,13 +439,23 @@ package_do ()
    fi
 }
 
+DL=$BASE/dl
+WS=$BASE/ws
+LOG=$BASE/log
+INSTALL=$BASE/install
+
 # ------------------------------------------------------------------------------
 # Parse cmd line options
-while getopts "hi:d:j:" OPTION
+while getopts "hci:d:j:" OPTION
 do
    case $OPTION in
       h)
          usage
+         exit 1
+         ;;
+      c)
+         echo "Cleaning..."
+         rm -rf $INSTALL $LOG $WS
          exit 1
          ;;
       i)
@@ -483,11 +494,6 @@ echo -e "ilxr v0.1\n"
 echo "Packgage file: $PACKAGE"
 echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
-
-DL=$BASE/dl
-WS=$BASE/ws
-LOG=$BASE/log
-INSTALL=$BASE/install
 
 # Purge $INSTALL
 if [ -d $INSTALL ]
