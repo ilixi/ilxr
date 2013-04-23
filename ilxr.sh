@@ -445,6 +445,12 @@ LOG=$BASE/log
 INSTALL=$BASE/install
 
 # ------------------------------------------------------------------------------
+DISTRO=$(cat /etc/*-release | grep 'buntu\|ebian')
+if [ -z $DISTRO ]
+then
+   log_error "Distro is not supported."
+fi
+
 # Parse cmd line options
 while getopts "hci:d:j:" OPTION
 do
