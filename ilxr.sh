@@ -40,7 +40,8 @@ OPTIONS:
    -h                    Show this message
    -c                    Clean old build and logs
    -i <package_file>     Use given package file
-   -d <directory>        Destination directory
+   -d <directory>        Directory to use for downloading and building packages
+   -o <directory>        Installation directory
    -j <#>                Jobs for parallel build, default=$JOBS
 EOF
 }
@@ -439,11 +440,6 @@ package_do ()
    fi
 }
 
-DL=$BASE/dl
-WS=$BASE/ws
-LOG=$BASE/log
-INSTALL=$BASE/install
-
 # ------------------------------------------------------------------------------
 DISTRO=$(cat /etc/*-release | grep 'buntu\|ebian')
 if [ -z $DISTRO ]
@@ -451,8 +447,9 @@ then
    log_error "Distro is not supported."
 fi
 
+INSTALL=
 # Parse cmd line options
-while getopts "hci:d:j:" OPTION
+while getopts "hci:o:d:j:" OPTION
 do
    case $OPTION in
       h)
@@ -466,6 +463,9 @@ do
          ;;
       i)
          PACKAGE=$OPTARG
+         ;;
+      o)
+         INSTALL=$OPTARG
          ;;
       d)
          BASE=$OPTARG
@@ -493,6 +493,14 @@ fi
 if [ ! -d $BASE ]
 then
    mk_dir $BASE
+fi
+
+DL=$BASE/dl
+WS=$BASE/ws
+LOG=$BASE/log
+if [ -z $INSTALL ]
+then
+   INSTALL=$BASE/install
 fi
 
 # Print info
