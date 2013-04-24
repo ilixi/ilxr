@@ -449,16 +449,11 @@ fi
 
 INSTALL=
 # Parse cmd line options
-while getopts "hci:o:d:j:" OPTION
+while getopts "hi:o:d:j:" OPTION
 do
    case $OPTION in
       h)
          usage
-         exit 1
-         ;;
-      c)
-         echo "Cleaning..."
-         rm -rf $INSTALL $LOG $WS
          exit 1
          ;;
       i)
