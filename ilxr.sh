@@ -441,8 +441,8 @@ package_do ()
 }
 
 # ------------------------------------------------------------------------------
-DISTRO=$(cat /etc/*-release | grep 'buntu\|ebian')
-if [ -z $DISTRO ]
+DISTRO=$(lsb_release -i | grep 'buntu\|ebian')
+if [ -z "$DISTRO" ]
 then
    log_error "Distro is not supported."
 fi
