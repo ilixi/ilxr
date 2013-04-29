@@ -87,24 +87,36 @@ mk_dir ()
 # =============================================================================
 check_deps ()
 {
+   if [ $# -lt 1 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+
    echo "Checking for dependencies..."
    saveIFS=$IFS
    IFS=' '  
    for package in $1; do
-      local package_version=$(dpkg-query -W -f='${Version}' $package)
-      if [ -z $package_version ]
+      local package_version
+      package_version=$(dpkg-query -W -f='${Version}' $package)
+      if [ $? -eq 0 ]
       then
-         echo "Installing $package..."
-         sudo apt-get --force-yes --yes install $package &>/dev/null
-         if [ $? -ne 0 ]
+         if [ -z $package_version ]
          then
-            log_error "Could not install $package!"
+            echo "Installing $package..."
+            sudo apt-get --force-yes --yes install $package &>/dev/null
+            if [ $? -ne 0 ]
+            then
+               log_error "Could not install $package!"
+            fi
+         else
+            echo "$package is installed (version $package_version)"
          fi
       else
-         echo "$package is installed (version $package_version)"
+         echo "dpkg-query could not find $package. check your sources.list"
+         exit 1
       fi
    done
-   IFS=$saveIFS
+      IFS=$saveIFS
 }
 
 # === FUNCTION ================================================================
