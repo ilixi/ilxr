@@ -559,7 +559,10 @@ for package in $PACKAGE_LIST
    do if [ "$package" == "dependencies" ]
    then
       package.dependencies
-      check_deps $depends
+      if [ ! -z "$depends" ]
+      then
+         check_deps $depends
+      fi
    else
       package_do "$package"
    fi
