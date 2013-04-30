@@ -116,7 +116,7 @@ check_deps ()
          exit 1
       fi
    done
-      IFS=$saveIFS
+   IFS=$saveIFS
 }
 
 # === FUNCTION ================================================================
@@ -403,7 +403,7 @@ package_do ()
    fi
 
    saveIFS=$IFS
-   IFS=' '  
+   IFS=' '
 
    if [[ $source == *.git* ]]
    then
@@ -417,16 +417,27 @@ package_do ()
    fi
    IFS=$saveIFS
 
-   check_deps $depends
+   if [ ! -z "$depends" ]
+   then
+      check_deps $depends
+   fi
 
    if [ ! -z "$pre_build" ]
    then
-      echo "Evaluating pre_build"
-      eval $pre_build &>"$LOG/$1.prebuild.log"
-      if [ $? -ne 0 ]
-      then
-        log_error "Could evaluate pre_build!" "see $LOG/$1.install.log"
-      fi
+      saveIFS=$IFS
+      IFS=':\'
+      echo "Evaluating pre_build..."
+      > "$LOG/$1.prebuild.log"
+      for cmd in $pre_build
+      do
+         echo $cmd >>"$LOG/$1.prebuild.log"
+         eval $cmd >>"$LOG/$1.prebuild.log" 2>&1
+         if [ $? -ne 0 ]
+         then
+           log_error "Could not evaluate: $cmd!" "see $LOG/$1.prebuild.log"
+         fi
+      done
+      IFS=$saveIFS
    fi
 
    if [ ! -z $autoconf ] && [ $autoconf = "yes" ]
@@ -443,12 +454,20 @@ package_do ()
 
    if [ ! -z "$post_install" ]
    then
-      echo "Evaluating post_install"
-      eval $post_install &>"$LOG/$1.postinstall.log"
-      if [ $? -ne 0 ]
-      then
-        log_error "Could not evaluate post_install!" "see $LOG/$1.install.log"
-      fi
+      saveIFS=$IFS
+      IFS=':\'
+      echo "Evaluating post_install..."
+      > "$LOG/$1.postinstall.log"
+      for cmd in $post_install
+      do
+         echo $cmd >>"$LOG/$1.postinstall.log"
+         eval $cmd >>"$LOG/$1.postinstall.log" 2>&1
+         if [ $? -ne 0 ]
+         then
+           log_error "Could not evaluate: $cmd!" "see $LOG/$1.postinstall.log"
+         fi
+      done
+      IFS=$saveIFS
    fi
 }
 
