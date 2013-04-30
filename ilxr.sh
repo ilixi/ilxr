@@ -22,6 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
 
+CURRENT=${PWD}
 BASE=${PWD}/ilxr
 PACKAGE=packages
 JOBS=8

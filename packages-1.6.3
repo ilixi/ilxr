@@ -5,6 +5,7 @@ depends="build-essential autoconf libtool pkg-config git curl"
 source=http://www.directfb.org/downloads/Core/linux-fusion/linux-fusion-9.0.0.tar.gz
 depends="linux-headers-$(uname -r)"
 sudo_install=1
+post_install="sh ${CURRENT}/install_fusion.sh"
 
 [directfb]
 source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz

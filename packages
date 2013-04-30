@@ -15,13 +15,14 @@ depends="build-essential autoconf libtool pkg-config git curl"
 source=git://git.directfb.org/git/directfb/core/linux-fusion.git
 depends="linux-headers-$(uname -r)"
 sudo_install=1
+post_install="sh ${CURRENT}/install_fusion.sh"
 
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
 autoconf=yes
 
 [directfb]
-source="git://git.directfb.org/git/directfb/core/DirectFB.git directfb-1.6" ; << branch is used here
+source="git://git.directfb.org/git/directfb/core/DirectFB.git"
 depends="libasound2-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-multi --enable-network --enable-one --enable-sawman --enable-fusionsound --enable-fusiondale"
