@@ -98,23 +98,24 @@ check_deps ()
    IFS=' '  
    for package in $1; do
       local package_version
-      package_version=$(dpkg-query -W -f='${Version}' $package)
+      package_version=$(apt-cache policy $package | grep '  Candidate: ' | sed -e 's/  Candidate: //')
+      apt-cache policy $package | grep -q 'Installed: (none)'
       if [ $? -eq 0 ]
       then
          if [ -z $package_version ]
          then
-            echo "Installing $package..."
+            echo "apt-cache policy could not find $package. check your sources.list"
+            exit 1
+         else
+            echo "Installing $package... (version $package_version)"
             sudo apt-get --force-yes --yes install $package &>/dev/null
             if [ $? -ne 0 ]
             then
                log_error "Could not install $package!"
             fi
-         else
-            echo "$package is installed (version $package_version)"
          fi
       else
-         echo "dpkg-query could not find $package. check your sources.list"
-         exit 1
+         echo "$package is installed (version $package_version)"
       fi
    done
    IFS=$saveIFS
