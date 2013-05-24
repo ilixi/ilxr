@@ -1,28 +1,29 @@
 ilxr v0.2
 
-Local archive/file support
-- Extract local archive if source="file://ilixi.tar.gz"
-- Apply local patch if source="file://001.patch"
-- Search for file in ./dl/<package>
+Support for cmake
+- required for ilixi webkit and reflex support in ilixi
+- parse configuration parameters just like autoconf based packages (Line 283)
+- act on autoconf and cmake inside package_parser (Line 445)
 
-Create files in an organised manner using package fields, e.g. directfbrc or udev rules.
-- files=".directfbrc:~/ \
-	 .sawmanrc:~/ \
-	 40-fusion.rules:/etc/udev/rules.d \
-	 40-one.rules:/etc/udev/rules.d \
+ilxr should use a repo to download package recipes and accompanying files.
+- Files in a repo reside in ./data/<repo_name>
+
+	./data/default/slim-latest	(minimal stack for single app, use git)
+	./data/default/slim-stable	(minimal stack for single app, use release tarballs)
+	./data/default/multi-latest	(minimal stack for multi app, use git)
+	./data/default/multi-stable	(minimal stack for multi app, use release tarballs)
+	./data/default/webkit-dev	(multi app, including ilixi webkit, video/sound support)
+	./data/default/kleistpark	(webkit-dev and lots of other stuff)
+	./data/default/install_fusion.sh
+	./data/default/.directfbrc
+	./data/default/.sawmanrc
+	./data/default/.fusionsoundrc
+
+Add support for files field to package_parser
+- files=".directfbrc:~/ \ 
+	 .sawmanrc:/etc \
 	"
+- <file_name>:<path> copies file to path
 
-- Changes to filesystem structure.
- - ilxr
-    |
-    +--- dl (for archives, patches, etc.)
-    |     |
-    |     +--- <package> (source and patches)
-    |     |
-    |     +--- git/<package> (branch is cloned)
-    |
-    +--- install (can be a custom directory where all packages are installed)
-    |
-    +--- ws (staging directory where patching and build takes place)
+Warn user that sudo operation required in the beginning
 
-- Warn user that sudo operation required in the beginning
