@@ -1,0 +1,25 @@
+; ----------------------------------------------------------------------------------------
+; "slim" using stable source packages
+;
+; - This recipe installs default stack for single app use
+; ----------------------------------------------------------------------------------------
+
+[dependencies]
+depends="build-essential autoconf libtool pkg-config git curl gettext"
+
+[directfb]
+source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz
+depends="libpng12-dev libjpeg8-dev"
+autoconf=yes
+options="--enable-network --enable-one --enable-fusionsound --with-gfxdrivers=none"
+
+[fusionsound]
+source=http://www.directfb.org/downloads/Core/FusionSound/FusionSound-1.6.3.tar.gz
+depends="libasound2-dev"
+autoconf=yes
+
+[ilixi]
+source=git://git.directfb.org/git/directfb/libs/ilixi.git
+depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev"
+autoconf=yes
+options="--enable-fusionsound --with-examples"

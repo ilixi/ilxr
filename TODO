@@ -8,14 +8,9 @@ Support for cmake
 ilxr should use a repo to download package recipes and accompanying files.
 - Files in a repo reside in ./data/<repo_name>
 
-	./data/default/slim-latest	(minimal stack for single app, use git)
-	./data/default/slim-stable	(minimal stack for single app, use release tarballs)
-	./data/default/multi-latest	(minimal stack for multi app, use git)
-	./data/default/multi-stable	(minimal stack for multi app, use release tarballs)
 	./data/default/webkit-dev	(multi app, including ilixi webkit, video/sound support)
 	./data/default/kleistpark	(webkit-dev and lots of other stuff)
 	./data/default/install_fusion.sh
-	./data/default/.directfbrc
 	./data/default/.sawmanrc
 	./data/default/.fusionsoundrc
 
