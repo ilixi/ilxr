@@ -1,0 +1,27 @@
+ilxr
+========
+
+A simple bash script to help install ilixi and its dependencies on your host machine.
+Visit http://www.ilixi.org for more info.
+
+ilxr only supports Makefile and autotools based packages for now. CMake support will be added soon.
+
+Please submit bugs to <tarik@ilixi.org>.
+
+How to add new packages
+--------
+
+ilxr includes example software stacks for single (slim) and multiple (multi) application use cases.
+These are located in "./data/default/".
+
+A package is defined using square brackets and can have the following key, value pairs:
+* source - git repository, tarball
+* autoconf - runs autoconfigure
+* depends - list of dependencies which are installed using package manager.
+* sudo_install - package is installed using sudo.
+* pre_build - apply patches, create files, etc.
+* options - specify configuration options, if any
+* post_install - run helper script, e.g. install_modules.
+* files - copy files 
+
+
