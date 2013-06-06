@@ -12,6 +12,7 @@ source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-network --enable-one --enable-fusionsound --with-gfxdrivers=none"
+files="directfbrc-slim:~/.directfbrc"
 
 [fusionsound]
 source=http://www.directfb.org/downloads/Core/FusionSound/FusionSound-1.6.3.tar.gz

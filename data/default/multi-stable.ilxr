@@ -18,6 +18,7 @@ source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-multi --enable-network --enable-one --with-gfxdrivers=none"
+files="directfbrc-multi:~/.directfbrc"
 
 [sawman]
 source=http://www.directfb.org/downloads/Extras/SaWMan-1.6.3.tar.gz
