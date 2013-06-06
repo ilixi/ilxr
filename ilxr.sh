@@ -24,7 +24,8 @@
 
 CURRENT=${PWD}
 BASE=${PWD}/ilxr
-PACKAGE=packages
+PACKAGE_DIR=${PWD}/data/default
+PACKAGE=slim-latest.ilxr
 JOBS=8
 PACKAGE_LIST=
 
@@ -40,7 +41,8 @@ usage: $0 options
 OPTIONS:
    -h                    Show this message
    -c                    Clean old build and logs
-   -i <package_file>     Use given package file
+   -i <directory>        Custom data directory for package files and other resources.
+   -p <package_file>     Use given package file
    -d <directory>        Directory to use for downloading and building packages
    -o <directory>        Installation directory
    -j <#>                Jobs for parallel build, default=$JOBS
@@ -104,10 +106,10 @@ check_deps ()
       then
          if [ -z $package_version ]
          then
-            echo "apt-cache policy could not find $package. check your sources.list"
+            echo "   apt-cache policy could not find $package. check your sources.list"
             exit 1
          else
-            echo "Installing $package... (version $package_version)"
+            echo "   Installing $package... (version $package_version)"
             sudo apt-get --force-yes --yes install $package &>/dev/null
             if [ $? -ne 0 ]
             then
@@ -115,8 +117,37 @@ check_deps ()
             fi
          fi
       else
-         echo "$package is installed (version $package_version)"
+         echo "   $package is installed (version $package_version)"
       fi
+   done
+   IFS=$saveIFS
+}
+
+# === FUNCTION ================================================================
+#  NAME: copy_files
+#  DESCRIPTION: Copies files.
+#  PARAMETER1 : space seperated list of files.
+# =============================================================================
+copy_files ()
+{
+   if [ $# -lt 1 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+
+   echo "Copying files..."
+   saveIFS=$IFS
+   IFS=' '
+   local index
+   local src
+   local target
+   for file in $1; do
+      echo $file
+      index=`expr index "$file" :`
+      src=${file:0:$index-1}
+      target=${file:$index}
+      echo -e "Copying $src to $target"
+      cp -r $src $target
    done
    IFS=$saveIFS
 }
@@ -391,6 +422,7 @@ package_do ()
 {   
    source=
    autoconf=
+   files=
    depends=
    sudo_install=
    pre_build=
@@ -471,6 +503,11 @@ package_do ()
       done
       IFS=$saveIFS
    fi
+
+   if [ ! -z "$files" ]
+   then
+      copy_files $files
+   fi
 }
 
 # ------------------------------------------------------------------------------
@@ -482,7 +519,7 @@ fi
 
 INSTALL=
 # Parse cmd line options
-while getopts "hi:o:d:j:" OPTION
+while getopts "hi:p:o:d:j:" OPTION
 do
    case $OPTION in
       h)
@@ -490,6 +527,9 @@ do
          exit 1
          ;;
       i)
+         PACKAGE_DIR=$OPTARG
+         ;;
+      p)
          PACKAGE=$OPTARG
          ;;
       o)
@@ -512,9 +552,9 @@ do
    esac
 done
 
-if [ ! -f $PACKAGE ]
+if [ ! -f "$PACKAGE_DIR/$PACKAGE" ]
 then
-   echo "  Invalid package: $PACKAGE"
+   echo "  Invalid package: $PACKAGE_DIR/$PACKAGE"
    exit 1
 fi
 
@@ -532,7 +572,8 @@ then
 fi
 
 # Print info
-echo -e "ilxr v0.1\n"
+echo -e "\nilxr v0.2\n"
+echo "Package directory: $PACKAGE_DIR"
 echo "Packgage file: $PACKAGE"
 echo "Jobs: $JOBS"
 echo -e "Base directory: $BASE\n"
@@ -555,7 +596,7 @@ mk_dir $LOG
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
 
-package_parser $PACKAGE
+package_parser "$PACKAGE_DIR/$PACKAGE"
 
 for package in $PACKAGE_LIST
    do if [ "$package" == "dependencies" ]
