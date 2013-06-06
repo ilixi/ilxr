@@ -13,7 +13,7 @@ autoconf=yes
 
 [directfb]
 source="git://git.directfb.org/git/directfb/core/DirectFB.git"
-depends="libasound2-dev libpng12-dev libjpeg8-dev"
+depends="xorg-dev libasound2-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-network --enable-one --enable-fusionsound --with-gfxdrivers=none"
 
