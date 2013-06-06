@@ -5,7 +5,7 @@
 
 if ! grep -Fxq "fusion" /etc/modules
 then
-   echo "Autoload modules at startup"
+   echo "Append fusion and linux-one to etc/modules..."
    sudo su -c "echo fusion >> /etc/modules"
    sudo su -c "echo linux-one >> /etc/modules"
 fi
