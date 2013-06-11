@@ -5,7 +5,7 @@
 ; ----------------------------------------------------------------------------------------
 
 [dependencies]
-depends="build-essential autoconf libtool pkg-config git curl gettext"
+depends="build-essential autoconf libtool pkg-config git curl"
 
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
@@ -20,6 +20,6 @@ files="directfbrc-slim:~/.directfbrc"
 
 [ilixi]
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
-depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev"
+depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext"
 autoconf=yes
 options="--enable-fusionsound --with-examples"
