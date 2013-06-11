@@ -23,8 +23,8 @@
 # ==============================================================================
 
 CURRENT=${PWD}
-BASE=${PWD}/ilxr
-PACKAGE_DIR=${PWD}/data/default
+BASE=${CURRENT}/ilxr
+PACKAGE_DIR=${CURRENT}/data/default
 PACKAGE=slim-latest.ilxr
 JOBS=8
 PACKAGE_LIST=
