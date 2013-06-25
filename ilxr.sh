@@ -142,12 +142,10 @@ copy_files ()
    local src
    local target
    for file in $1; do
-      echo $file
       index=`expr index "$file" :`
       src=${file:0:$index-1}
       target=${file:$index}
-      echo -e "Copying $src to $target"
-      cp -r $src $target
+      cp -ruv "$PACKAGE_DIR/$src" "$target"
    done
    IFS=$saveIFS
 }

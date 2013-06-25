@@ -2,17 +2,30 @@ ilxr
 ========
 
 A simple bash script to help install ilixi and its dependencies on your host machine.
+
 Visit http://www.ilixi.org for more info.
 
 ilxr only supports Makefile and autotools based packages for now. CMake support will be added soon.
 
 Please submit bugs to <tarik@ilixi.org>.
 
+
+
+Running ilxr
+--------
+By default ilxr will use "slim-latest.ilxr" recipe and start a build with 8 jobs. You can change this behaviour either by editing ilxr source or command line options. To get a list of available options type:
+./ilxr.sh -h 
+
+For example, to build and install ilixi with multi-application core support, using 4 jobs, type:
+./ilxr.sh -j 4 -p multi-latest.ilxr
+
+Source files are downloaded to "./ilxr/dl/", then copied to "./ilxr/ws/" for a build to start. Once the build is completed, files are installed to "./ilxr/install/". Note that output of each operation is stored in "./ilxr/log/".
+
+
 How to add new packages
 --------
 
-ilxr includes example software stacks for single (slim) and multiple (multi) application use cases.
-These are located in "./data/default/".
+ilxr includes example software stacks (recipes) for single (slim) and multiple (multi) application use cases. These are located in "./data/default/". It should give you an idea :)
 
 A package is defined using square brackets and can have the following key, value pairs:
 * source - git repository, tarball
@@ -23,5 +36,4 @@ A package is defined using square brackets and can have the following key, value
 * options - specify configuration options, if any
 * post_install - run helper script, e.g. install_modules.
 * files - copy files 
-
 

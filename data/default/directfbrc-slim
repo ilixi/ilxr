@@ -1,3 +1,5 @@
+# DirectFB single core default configuration
+
 system=x11
 mode=800x600
 no-cursor-updates

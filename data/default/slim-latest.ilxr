@@ -16,7 +16,7 @@ source="git://git.directfb.org/git/directfb/core/DirectFB.git"
 depends="xorg-dev libasound2-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-network --enable-one --enable-fusionsound --with-gfxdrivers=none"
-files="directfbrc-slim:~/.directfbrc"
+files="directfbrc-slim:${HOME}/.directfbrc"
 
 [ilixi]
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
