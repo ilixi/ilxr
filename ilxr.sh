@@ -366,7 +366,7 @@ build_make()
    echo "Installing..."
    if [ -z "$2" ]
    then
-      sudo make -j$JOBS install &>"$LOG/$1.install.log"
+      sudo checkinstall  --pkgname "$1" --pkgversion "0" --default &>"$LOG/$1.install.log"
    else
       make -j$JOBS install &>"$LOG/$1.install.log"
    fi
