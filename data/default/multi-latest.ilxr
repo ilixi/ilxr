@@ -5,7 +5,7 @@
 ; ----------------------------------------------------------------------------------------
 
 [dependencies]
-depends="build-essential autoconf libtool pkg-config git curl"
+depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 
 [linux-fusion]
 source=git://git.directfb.org/git/directfb/core/linux-fusion.git

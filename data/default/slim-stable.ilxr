@@ -5,13 +5,13 @@
 ; ----------------------------------------------------------------------------------------
 
 [dependencies]
-depends="build-essential autoconf libtool pkg-config git curl"
+depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 
 [directfb]
 source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
-options="--enable-network --enable-one --enable-fusionsound --with-gfxdrivers=none"
+options="--enable-network --enable-fusionsound --with-gfxdrivers=none"
 files="directfbrc-slim:${HOME}/.directfbrc"
 
 [fusionsound]
