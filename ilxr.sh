@@ -367,6 +367,7 @@ build_make()
    if [ -z "$2" ]
    then
       sudo checkinstall  --pkgname "$1" --pkgversion "0" --default &>"$LOG/$1.install.log"
+      sudo chown -R $USER:$(groups | awk '{print $1}') $WS/$1
    else
       make -j$JOBS install &>"$LOG/$1.install.log"
    fi
