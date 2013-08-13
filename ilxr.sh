@@ -366,7 +366,7 @@ build_make()
    echo "Installing..."
    if [ -z "$2" ]
    then
-      sudo checkinstall  --pkgname "$1" --pkgversion "0" --default &>"$LOG/$1.install.log"
+      sudo checkinstall  --pkgname "$1" --pkgversion $package_version --default &>"$LOG/$1.install.log"
       sudo chown -R $USER:$(groups | awk '{print $1}') $WS/$1
    else
       make -j$JOBS install &>"$LOG/$1.install.log"
@@ -424,6 +424,7 @@ package_do ()
    files=
    depends=
    sudo_install=
+   package_version=
    pre_build=
    options=
    post_install=
@@ -441,6 +442,7 @@ package_do ()
    if [[ $source == *.git* ]]
    then
       source_git_get $1 $source
+      package_version=git.$(git --git-dir=$DL/git/$1/.git rev-parse HEAD)
       source_copy $1 $DL/git/$1
    else
       AFTER_SLASH=${source##*/}
