@@ -1,7 +1,7 @@
 # !/bin/bash
 # ===============================================================================
 # FILE		: ilxr.sh
-# AUTHORS	: A. Erdem Budak <ebudak@rhun.net>,
+# AUTHORS	: A. Erdem Budak <erdem@ilixi.org>,
 #		  Tarik Sekmen <tarik@ilixi.org>
 # DESCRIPTION	: A simple bash script to help install ilixi and its dependencies 
 #                 on your system. Visit http://www.ilixi.org for more info.
