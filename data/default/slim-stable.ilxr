@@ -8,16 +8,11 @@
 depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 
 [directfb]
-source=http://www.directfb.org/downloads/Core/DirectFB-1.6/DirectFB-1.6.3.tar.gz
+source=http://directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
 options="--enable-network --enable-fusionsound --with-gfxdrivers=none"
 files="directfbrc-slim:${HOME}/.directfbrc"
-
-[fusionsound]
-source=http://www.directfb.org/downloads/Core/FusionSound/FusionSound-1.6.3.tar.gz
-depends="libasound2-dev"
-autoconf=yes
 
 [ilixi]
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
