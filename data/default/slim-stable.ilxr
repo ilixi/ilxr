@@ -15,7 +15,7 @@ options="--enable-sawman --enable-network --enable-fusionsound --with-gfxdrivers
 files="directfbrc-slim:${HOME}/.directfbrc"
 
 [ilixi]
-source=git://git.directfb.org/git/directfb/libs/ilixi.git
+source=http://www.directfb.org/downloads/Libs/ilixi-1.0.0.tar.gz
 depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext"
 autoconf=yes
 options="--enable-fusionsound --with-examples"
