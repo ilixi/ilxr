@@ -308,7 +308,7 @@ source_extract ()
 #  NAME: source_patch
 #  DESCRIPTION: Patch source files.
 #  PARAMETER 1: name
-#  PARAMETER 2: filenames separated by semicolon
+#  PARAMETER 2: filenames separated by space
 # =============================================================================
 source_patch ()
 {
