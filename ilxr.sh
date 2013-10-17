@@ -25,6 +25,7 @@
 CURRENT=${PWD}
 BASE=${CURRENT}/ilxr
 PACKAGE_DIR=${CURRENT}/data/default
+PATCH_DIR=${CURRENT}/data/patch
 PACKAGE=slim-latest.ilxr
 JOBS=8
 PACKAGE_LIST=
@@ -304,6 +305,37 @@ source_extract ()
 }
 
 # === FUNCTION ================================================================
+#  NAME: source_patch
+#  DESCRIPTION: Patch source files.
+#  PARAMETER 1: name
+#  PARAMETER 2: filenames separated by semicolon
+# =============================================================================
+source_patch ()
+{
+   if [ $# -lt 2 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+   echo "Applying patches.."
+   cd $WS/$1
+   
+   saveIFS=$IFS
+   IFS=" "
+
+   for p in $2
+   do
+      echo "   $p"
+      patch < $PATCH_DIR/$p &>"$LOG/$1.patch.$p.log"
+      if [ $? -ne 0 ]
+      then
+         log_error "Patch error." "see $LOG/$1.patch.$p.log"
+      fi
+   done
+
+   IFS=$saveIFS
+}
+
+# === FUNCTION ================================================================
 #  NAME: build_configure
 #  DESCRIPTION: Run configure 
 #  PARAMETER 1: name
@@ -426,6 +458,7 @@ package_do ()
    sudo_install=
    package_version=
    pre_build=
+   patch=
    options=
    post_install=
 
@@ -475,10 +508,15 @@ package_do ()
       IFS=$saveIFS
    fi
 
+   if [ ! -z "$patch" ]
+   then
+     source_patch $1 $patch
+   fi  
+   
    if [ ! -z $autoconf ] && [ $autoconf = "yes" ]
    then
      build_configure $1 $options
-   fi  
+   fi
 
    if [ -z "$sudo_install" ]
    then
