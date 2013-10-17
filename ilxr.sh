@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 # ===============================================================================
 # FILE		: ilxr.sh
 # AUTHORS	: A. Erdem Budak <erdem@ilixi.org>,
