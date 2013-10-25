@@ -37,3 +37,13 @@ A package is defined using square brackets and can have the following key, value
 * post_install - run helper script, e.g. install_modules.
 * files - copy files 
 
+How to use installed packages
+-----------------------------
+You can specify a custom install directory using "-o <path>".
+
+Before building your own packages you can set following:
+
+	export LD_LIBRARY_PATH=<path>/lib/:$LD_LIBRARY_PATH
+	export PKG_CONFIG_PATH=<path>/lib/pkgconfig/
+	export PATH=<path>/bin:$PATH
+
