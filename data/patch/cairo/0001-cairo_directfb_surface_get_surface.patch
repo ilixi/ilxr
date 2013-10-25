@@ -1,0 +1,30 @@
+diff --git a/src/cairo-directfb-surface.c b/src/cairo-directfb-surface.c
+index 16e367a..714ea37 100644
+--- a/src/cairo-directfb-surface.c
++++ b/src/cairo-directfb-surface.c
+@@ -542,3 +542,11 @@ cairo_directfb_surface_create (IDirectFB *dfb, IDirectFBSurface *dfbsurface)
+     return &surface->image.base;
+ }
+ slim_hidden_def(cairo_directfb_surface_create);
++
++IDirectFBSurface *
++cairo_directfb_surface_get_surface (cairo_surface_t *surface)
++{
++    cairo_dfb_surface_t *dfb_surface = (cairo_dfb_surface_t *) surface;
++
++    return dfb_surface->dfb_surface;
++}
+diff --git a/src/cairo-directfb.h b/src/cairo-directfb.h
+index e3d818c..fd21868 100644
+--- a/src/cairo-directfb.h
++++ b/src/cairo-directfb.h
+@@ -58,6 +58,9 @@ CAIRO_BEGIN_DECLS
+ cairo_public cairo_surface_t *
+ cairo_directfb_surface_create (IDirectFB *dfb, IDirectFBSurface *surface);
+ 
++cairo_public IDirectFBSurface *
++cairo_directfb_surface_get_surface (cairo_surface_t *surface);
++
+ CAIRO_END_DECLS
+ 
+ #else  /*CAIRO_HAS_DIRECTFB_SURFACE*/
