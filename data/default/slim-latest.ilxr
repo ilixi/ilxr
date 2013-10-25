@@ -15,7 +15,7 @@ autoconf=yes
 source="git://git.directfb.org/git/directfb/core/DirectFB.git"
 depends="xorg-dev libasound2-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
-options="--enable-network --enable-fusionsound --with-gfxdrivers=none"
+options="--enable-network --enable-fusionsound --with-gfxdrivers=none --disable-egl-united"
 files="directfbrc-slim:${HOME}/.directfbrc"
 
 [ilixi]
