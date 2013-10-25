@@ -299,6 +299,9 @@ source_extract ()
    elif [[ $2 == *.tar.bz2 ]]
    then
       tar --directory=$WS/$1 --strip 1 -jxf $DL/$1/$2 &>"$LOG/$1.extract.log"
+   elif [[ $2 == *.tar.xz ]]
+   then
+      tar --directory=$WS/$1 --strip 1 -xJf $DL/$1/$2 &>"$LOG/$1.extract.log"
    else
       echo "unknown file"
    fi
@@ -325,7 +328,7 @@ source_patch ()
    for p in $2
    do
       echo "   $p"
-      patch < $PATCH_DIR/$p &>"$LOG/$1.patch.$p.log"
+      patch -p1 < $PATCH_DIR/$1/$p &>"$LOG/$1.patch.$p.log"
       if [ $? -ne 0 ]
       then
          log_error "Patch error." "see $LOG/$1.patch.$p.log"
@@ -333,6 +336,29 @@ source_patch ()
    done
 
    IFS=$saveIFS
+}
+
+# === FUNCTION ================================================================
+#  NAME: build_cmake
+#  DESCRIPTION: Runs cmake with given options.
+#  PARAMETER 1: name
+#  PARAMETER 2: list of parameters 
+# =============================================================================
+build_cmake ()
+{
+   if [ $# -lt 2 ]
+   then
+      log_error "Not enough arguments!"
+   fi
+   echo "Running cmake..."
+   cd $WS/$1
+   
+   cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $2 &>"$LOG/$1.autoreconf.log"
+
+   if [ $? -ne 0 ]
+   then
+     log_error "Cmake error." "see $LOG/$1.cmake.log"
+   fi
 }
 
 # === FUNCTION ================================================================
@@ -460,6 +486,7 @@ package_do ()
    pre_build=
    patch=
    options=
+   cmake_options=
    post_install=
 
    cd $BASE
@@ -516,6 +543,9 @@ package_do ()
    if [ ! -z $autoconf ] && [ $autoconf = "yes" ]
    then
      build_configure $1 $options
+   elif [ ! -z $cmake_options ]
+   then
+     build_cmake $1 $cmake_options
    fi
 
    if [ -z "$sudo_install" ]
@@ -615,7 +645,8 @@ echo -e "\nilxr v0.2\n"
 echo "Package directory: $PACKAGE_DIR"
 echo "Packgage file: $PACKAGE"
 echo "Jobs: $JOBS"
-echo -e "Base directory: $BASE\n"
+echo "Base directory: $BASE"
+echo -e "Install directory: $INSTALL\n"
 
 # Purge $INSTALL
 if [ -d $INSTALL ]
@@ -636,7 +667,6 @@ export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
 
 package_parser "$PACKAGE_DIR/$PACKAGE"
-
 for package in $PACKAGE_LIST
    do if [ "$package" == "dependencies" ]
    then
