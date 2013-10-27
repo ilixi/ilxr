@@ -683,5 +683,9 @@ for package in $PACKAGE_LIST
    fi
 done
 
-echo -e "\ndone.\n"
+echo -e "\ndone!\n"
+echo -e "You can export following and start using installed packages:\n"
+echo "   export LD_LIBRARY_PATH=$INSTALL/lib/:\$LD_LIBRARY_PATH"
+echo "   export PKG_CONFIG_PATH=$INSTALL/lib/pkgconfig/"
+echo -e "   export PATH=$INSTALL/bin:\$PATH\n"
 exit 0
