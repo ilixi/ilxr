@@ -38,5 +38,5 @@ options="--enable-directfb"
 
 [webkitdfb]
 source="git://git.directfb.org/git/directfb/libs/WebKitDFB.git webkitdfb-r148969"
-depends="bison libenchant-dev flex gawk libgnutls-dev gperf harfbuzz libicu-dev libxslt1-dev libxt-dev perl libsqlite3-dev libcurl-dev"
+depends="bison libenchant-dev flex gawk libgnutls-dev gperf harfbuzz libicu-dev libxslt1-dev libxt-dev perl libsqlite3-dev libcurl4-openssl-dev"
 cmake_options="-DPORT=DirectFB -DCMAKE_BUILD_TYPE=Release -DUSE_ILIXI=ON -DUSE_SOUP=OFF -DENABLE_FUSIONSOUND=ON -DWTF_USE_TILED_BACKING_STORE=OFF -DENABLE_LEGACY_NOTIFICATIONS=OFF -DENABLE_NOTIFICATIONS=OFF -DENABLE_VIDEO=OFF -DENABLE_WEB_AUDIO=OFF -DENABLE_WEBGL=OFF -DUSE_SYSTEM_MALLOC=ON -DENABLE_FUSIONDALE=OFF"
