@@ -353,12 +353,15 @@ build_cmake ()
    echo "Running cmake..."
    cd $WS/$1
    
-   cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $2 &>"$LOG/$1.autoreconf.log"
+   saveIFS=$IFS
+   IFS=' '
+   cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $2 &>"$LOG/$1.cmake.log"
 
    if [ $? -ne 0 ]
    then
      log_error "Cmake error." "see $LOG/$1.cmake.log"
    fi
+   IFS=$saveIFS
 }
 
 # === FUNCTION ================================================================
