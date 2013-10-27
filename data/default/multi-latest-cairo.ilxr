@@ -25,7 +25,7 @@ options="--enable-fusiondale --enable-fusionsound --enable-sawman --enable-multi
 files="directfbrc-multi:${HOME}/.directfbrc"
 
 [cairo]
-source="http://cairographics.org/releases/cairo-1.12.14.tar.xz"
+source="http://cairographics.org/releases/cairo-1.10.2.tar.gz"
 patch="0001-cairo_directfb_surface_get_surface.patch"
 autoconf=yes
 options="--enable-directfb"
