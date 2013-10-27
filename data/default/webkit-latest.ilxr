@@ -26,7 +26,7 @@ files="directfbrc-multi:${HOME}/.directfbrc"
 
 [ilixi]
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
-depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext"
+depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext libgles2-mesa-dev"
 autoconf=yes
 options="--enable-fusiondale --enable-fusionsound --enable-sawman --with-examples"
 
