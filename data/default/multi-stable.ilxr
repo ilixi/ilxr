@@ -8,14 +8,14 @@
 depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 
 [linux-fusion]
-source=http://directfb.org/downloads/Core/linux-fusion/linux-fusion-9.0.1.tar.gz
+source=http://directfb.org/downloads/Core/linux-fusion/linux-fusion-9.0.2.tar.gz
 depends="linux-headers-$(uname -r)"
 sudo_install=1
 package_version="9.0.0"
 post_install="sh ${CURRENT}/install_fusion.sh"
 
 [directfb]
-source=http://directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz
+source=http://directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.1.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev libavformat-dev libswscale-dev"
 autoconf=yes
 options="--enable-fusiondale --enable-fusionsound --enable-sawman --enable-multi --enable-network --enable-one --enable-ffmpeg --with-gfxdrivers=none"
