@@ -30,6 +30,15 @@ PACKAGE=slim-latest.ilxr
 JOBS=8
 PACKAGE_LIST=
 
+# === COLORS ==================================================================
+red='\e[0;91m'
+green='\e[0;92m'
+yellow='\e[0;93m'
+clear='\e[0m'
+bold='\e[1m'
+# =============================================================================
+
+
 # === FUNCTION ================================================================
 #  NAME: usage
 #  DESCRIPTION: Prints command line options and usage information.
@@ -57,10 +66,11 @@ EOF
 # =============================================================================
 log_error ()
 {
-   echo "(!) ${FUNCNAME[ 1 ]} ()"
+   echo -e "${red}(!) ${FUNCNAME[ 1 ]}()"
    for ln in "$@" ; do
       echo "    -> ${ln}"
    done
+   echo -e "${clear}"
    exit 1
 }
 
@@ -236,7 +246,7 @@ source_http_get ()
       log_error "Not enough arguments!"
    fi
 
-   echo -e "\nDownloading $1 ..."
+   echo -e "\nDownloading $1..."
 
    if [ ! -d $DL/$1 ]
    then
@@ -266,7 +276,7 @@ source_copy ()
    then
       rm -rf $WS/$1
    fi
-   echo -e "Copying $1 from source to ws."
+   echo "Copying $1 from source to ws..."
    cp -r $2 $WS/$1 &>"$LOG/$1.copy.log"
 }
 
@@ -289,7 +299,7 @@ source_extract ()
    fi
    mkdir -p $WS/$1
 
-   echo -e "Extracting $1/$2 to ws."
+   echo "Extracting $1/$2 to ws..."
    if [[ $2 == *.tar ]]
    then
       tar --directory=$WS/$1 --strip 1 -xf $DL/$1/$2 &>"$LOG/$1.extract.log"
@@ -319,7 +329,7 @@ source_patch ()
    then
       log_error "Not enough arguments!"
    fi
-   echo "Applying patches.."
+   printf "Applying patches\t\t"
    cd $WS/$1
    
    saveIFS=$IFS
@@ -334,7 +344,7 @@ source_patch ()
          log_error "Patch error." "see $LOG/$1.patch.$p.log"
       fi
    done
-
+   echo -e "${green} [done]${clear}"
    IFS=$saveIFS
 }
 
@@ -350,7 +360,7 @@ build_cmake ()
    then
       log_error "Not enough arguments!"
    fi
-   echo "Running cmake..."
+   printf "Running cmake\t\t"
    cd $WS/$1
    
    saveIFS=$IFS
@@ -361,6 +371,7 @@ build_cmake ()
    then
      log_error "Cmake error." "see $LOG/$1.cmake.log"
    fi
+   echo -e "${green} [done]${clear}"
    IFS=$saveIFS
 }
 
@@ -380,7 +391,7 @@ build_configure()
 
    if [ ! -f configure.sh ]
    then
-      echo "Running autoreconf..."
+      printf "Running autoreconf\t\t"
       autoreconf -fi &>"$LOG/$1.autoreconf.log"
    fi
 
@@ -388,8 +399,9 @@ build_configure()
    then
      log_error "Autoreconf error." "see $LOG/$1.autoreconf.log"
    fi
+   echo -e "${green} [done]${clear}"
 
-   echo "Configuring..."
+   printf "Configuring\t\t\t"
    saveIFS=$IFS
    IFS=' '
    ./configure $2 --prefix=$INSTALL &>"$LOG/$1.configure.log"
@@ -398,6 +410,7 @@ build_configure()
    then
      log_error "Configure error." "see $LOG/$1.configure.log"
    fi
+   echo -e "${green} [done]${clear}"
    IFS=$saveIFS
 }
 
@@ -416,20 +429,23 @@ build_make()
 
    cd $WS/$1
 
-   echo "Building..."
+   printf "Building\t\t\t"
    make -j$JOBS &>"$LOG/$1.build.log"
+   echo -e "${green} [done]${clear}"
 
    if [ $? -ne 0 ]
    then
      log_error "Could not build!" "see $LOG/$1.build.log"
    fi
  
-   echo "Installing..."
    if [ -z "$2" ]
    then
+      echo "(*) $1 requires sudo install"
       sudo checkinstall  --pkgname "$1" --pkgversion $package_version --default &>"$LOG/$1.install.log" --fstrans=no
       sudo chown -R $USER:$(groups | awk '{print $1}') $WS/$1
+      printf "Installing\t\t\t"
    else
+      printf "Installing\t\t\t"
       make -j$JOBS install &>"$LOG/$1.install.log"
    fi
 
@@ -437,6 +453,7 @@ build_make()
    then
      log_error "Could not install!" "see $LOG/$1.install.log"
    fi
+   echo -e "${green} [done]${clear}"
 }
 
 # === FUNCTION ================================================================
@@ -524,7 +541,7 @@ package_do ()
    then
       saveIFS=$IFS
       IFS=':\'
-      echo "Evaluating pre_build..."
+      printf "Evaluating pre_build...\t"
       > "$LOG/$1.prebuild.log"
       for cmd in $pre_build
       do
@@ -535,6 +552,7 @@ package_do ()
            log_error "Could not evaluate: $cmd!" "see $LOG/$1.prebuild.log"
          fi
       done
+      echo -e "${green} [done]${clear}"
       IFS=$saveIFS
    fi
 
@@ -562,7 +580,7 @@ package_do ()
    then
       saveIFS=$IFS
       IFS=':\'
-      echo "Evaluating post_install..."
+      printf "Evaluating post_install...\t"
       > "$LOG/$1.postinstall.log"
       for cmd in $post_install
       do
@@ -573,6 +591,7 @@ package_do ()
            log_error "Could not evaluate: $cmd!" "see $LOG/$1.postinstall.log"
          fi
       done
+      echo -e "${green} [done]${clear}"
       IFS=$saveIFS
    fi
 
@@ -630,6 +649,12 @@ then
    exit 1
 fi
 
+if [ ${PACKAGE:${#PACKAGE}-5:5} != ".ilxr" ]
+then
+   echo "  Invalid package extension: $PACKAGE_DIR/$PACKAGE"
+   exit 1
+fi
+
 if [ ! -d $BASE ]
 then
    mk_dir $BASE
@@ -640,16 +665,16 @@ WS=$BASE/ws
 LOG=$BASE/log
 if [ -z $INSTALL ]
 then
-   INSTALL=$BASE/install
+   INSTALL=$BASE/${PACKAGE:0:${#PACKAGE}-5}
 fi
 
 # Print info
-echo -e "\nilxr v0.2\n"
-echo "Package directory: $PACKAGE_DIR"
-echo "Packgage file: $PACKAGE"
-echo "Jobs: $JOBS"
-echo "Base directory: $BASE"
-echo -e "Install directory: $INSTALL\n"
+echo -e "\n${yellow}--------------------- ilxr v0.2 ---------------------${clear}\n"
+echo -e "${bold}Package directory:${clear} $PACKAGE_DIR"
+echo -e "${bold}Packgage file:${clear} $PACKAGE"
+echo -e "${bold}Jobs:${clear} $JOBS"
+echo -e "${bold}Base directory:${clear} $BASE"
+echo -e "${bold}Install directory:${clear} $INSTALL\n"
 
 # Purge $INSTALL
 if [ -d $INSTALL ]
@@ -683,7 +708,7 @@ for package in $PACKAGE_LIST
    fi
 done
 
-echo -e "\ndone!\n"
+echo -e "\n${yellow}----------------------- done! -----------------------${clear}\n"
 echo -e "You can export following and start using installed packages:\n"
 echo "   export LD_LIBRARY_PATH=$INSTALL/lib/:\$LD_LIBRARY_PATH"
 echo "   export PKG_CONFIG_PATH=$INSTALL/lib/pkgconfig/"
