@@ -14,8 +14,8 @@ if [ ! -f "/etc/udev/rules.d/40-fusion.rules" ]
 then
    echo "Creating udev rules..."
    sudo usermod -a -G video "$(whoami)"
-   sudo sh -c "echo KERNEL==\\\"fusion[0-7]*\\\", NAME=\\\"fusion%n\\\", GROUP=\\\"video\\\", MODE=\\\"0660\\\" > /etc/udev/rules.d/40-fusion.rules"
-   sudo sh -c "echo KERNEL==\\\"one[0-7]*\\\", NAME=\\\"one%n\\\", GROUP=\\\"video\\\", MODE=\\\"0660\\\" > /etc/udev/rules.d/40-one.rules"
+   sudo sh -c "echo KERNEL==\\\"fusion[0-7]*\\\", NAME=\\\"fusion%n\\\", GROUP=\\\"video\\\", MODE=\\\"0666\\\" > /etc/udev/rules.d/40-fusion.rules"
+   sudo sh -c "echo KERNEL==\\\"one[0-7]*\\\", NAME=\\\"one%n\\\", GROUP=\\\"video\\\", MODE=\\\"0666\\\" > /etc/udev/rules.d/40-one.rules"
    sudo /etc/init.d/udev reload
 fi
 
