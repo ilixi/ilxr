@@ -28,14 +28,16 @@ How to add new packages
 ilxr includes example software stacks (recipes) for single (slim) and multiple (multi) application use cases. These are located in "./data/default/". It should give you an idea :)
 
 A package is defined using square brackets and can have the following key, value pairs:
-* source - git repository, tarball
-* autoconf - runs autoconfigure
-* depends - list of dependencies which are installed using package manager.
-* sudo_install - package is installed using sudo.
-* pre_build - apply patches, create files, etc.
-* options - specify configuration options, if any
-* post_install - run helper script, e.g. install_modules.
-* files - copy files 
+* source - path to a git repository or tarball
+* patch - list of patches to apply. use spaces to have more than one patch. patches are searched in /data/patch/<name> directory.
+* depends - list of dependencies which are installed using distro's package manager.
+* autoconf - If set to "yes", ilxr runs autoconf utils to create a configure script for package
+* autoconf_options - list of configuration options for autoconf based package.
+* cmake_options - list of configuration options for cmake based package.
+* sudo_install - package is installed using sudo. only required for system wide packages.
+* pre_build - space separated list of helper scripts to run before build. scripts are searched in <recipe_dir>.
+* post_install - space separated list of scripts to run after install. scripts are searched in <recipe_dir>.
+* files - list of files to copy
 
 How to use installed packages
 -----------------------------
