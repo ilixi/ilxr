@@ -1,9 +1,4 @@
-ilxr v0.2
-
-Support for cmake
-- required for ilixi webkit and reflex support in ilixi
-- parse configuration parameters just like autoconf based packages (Line 283)
-- act on autoconf and cmake inside package_parser (Line 445)
+ilxr v0.3
 
 ilxr should use a repo to download package recipes and accompanying files.
 - Files in a repo reside in ./data/<repo_name>
@@ -13,12 +8,4 @@ ilxr should use a repo to download package recipes and accompanying files.
 	./data/default/install_fusion.sh
 	./data/default/.sawmanrc
 	./data/default/.fusionsoundrc
-
-Add support for files field to package_parser
-- files=".directfbrc:~/ \ 
-	 .sawmanrc:/etc \
-	"
-- <file_name>:<path> copies file to path
-
-Warn user that sudo operation required in the beginning
 
