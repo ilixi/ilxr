@@ -1,10 +1,10 @@
 #!/bin/bash
 # ===============================================================================
-# FILE		: ilxr.sh
-# AUTHORS	: A. Erdem Budak <erdem@ilixi.org>,
-#		  Tarik Sekmen <tarik@ilixi.org>
-# DESCRIPTION	: A simple bash script to help install ilixi and its dependencies 
-#                 on your system. Visit http://www.ilixi.org for more info.
+# FILE		  : ilxr.sh
+# AUTHORS	  : A. Erdem Budak <erdem@ilixi.org>,
+#               Tarik Sekmen <tarik@ilixi.org>.
+# DESCRIPTION : A simple bash script to help install ilixi and its dependencies 
+#               on Ubuntu/Debian. Visit http://www.ilixi.org for more info.
 #
 # LICENSE
 #  
@@ -24,7 +24,7 @@
 
 CURRENT=${PWD}
 BASE=${CURRENT}/ilxr
-PACKAGE_DIR=${CURRENT}/data/default
+RECIPE_DIR=${CURRENT}/data/default
 PATCH_DIR=${CURRENT}/data/patch
 PACKAGE=slim-latest.ilxr
 JOBS=8
@@ -50,9 +50,8 @@ usage: $0 options
 
 OPTIONS:
    -h                    Show this message
-   -c                    Clean old build and logs
-   -i <directory>        Custom data directory for package files and other resources.
-   -p <package_file>     Use given package file
+   -r <directory>        Directory where recipes reside.
+   -p <package_file>     Use given package file in recipe directory
    -d <directory>        Directory to use for downloading and building packages
    -o <directory>        Installation directory
    -j <#>                Jobs for parallel build, default=$JOBS
@@ -156,7 +155,7 @@ copy_files ()
       index=`expr index "$file" :`
       src=${file:0:$index-1}
       target=${file:$index}
-      cp -ruv "$PACKAGE_DIR/$src" "$target"
+      cp -ruv "$RECIPE_DIR/$src" "$target"
    done
    IFS=$saveIFS
 }
@@ -338,10 +337,15 @@ source_patch ()
    for p in $2
    do
       echo "   $p"
-      patch -p1 < $PATCH_DIR/$1/$p &>"$LOG/$1.patch.$p.log"
-      if [ $? -ne 0 ]
+      if [ -f $PATCH_DIR/$1/$p ];
       then
-         log_error "Patch error." "see $LOG/$1.patch.$p.log"
+         patch -p1 < $PATCH_DIR/$1/$p &>"$LOG/$1.patch.$p.log"
+         if [ $? -ne 0 ]
+         then
+            log_error "Patch error." "see $LOG/$1.patch.$p.log"
+         fi
+      else
+         echo "Patch file $PATCH_DIR/$1/$p does not exist."
       fi
    done
    echo -e "${green} [done]${clear}"
@@ -418,7 +422,7 @@ build_configure()
 #  NAME: build_make
 #  DESCRIPTION: Run make 
 #  PARAMETER 1: name
-#  PARAMETER 2: paramater (optional)
+#  PARAMETER 2: if set, install using sudo (optional)
 # =============================================================================
 build_make()
 {
@@ -505,7 +509,7 @@ package_do ()
    package_version=
    pre_build=
    patch=
-   options=
+   autoconf_options=
    cmake_options=
    post_install=
 
@@ -541,12 +545,11 @@ package_do ()
    then
       saveIFS=$IFS
       IFS=':\'
-      printf "Evaluating pre_build...\t"
-      > "$LOG/$1.prebuild.log"
+      printf "Evaluating pre_build...\t" > "$LOG/$1.prebuild.log"
       for cmd in $pre_build
       do
          echo $cmd >>"$LOG/$1.prebuild.log"
-         eval $cmd >>"$LOG/$1.prebuild.log" 2>&1
+         eval "sh $RECIPE_DIR/$cmd" >>"$LOG/$1.prebuild.log" 2>&1
          if [ $? -ne 0 ]
          then
            log_error "Could not evaluate: $cmd!" "see $LOG/$1.prebuild.log"
@@ -563,7 +566,7 @@ package_do ()
    
    if [ ! -z $autoconf ] && [ $autoconf = "yes" ]
    then
-     build_configure $1 $options
+     build_configure $1 $autoconf_options
    elif [ ! -z $cmake_options ]
    then
      build_cmake $1 $cmake_options
@@ -580,12 +583,11 @@ package_do ()
    then
       saveIFS=$IFS
       IFS=':\'
-      printf "Evaluating post_install...\t"
-      > "$LOG/$1.postinstall.log"
+      printf "Evaluating post_install...\t" > "$LOG/$1.postinstall.log"
       for cmd in $post_install
       do
          echo $cmd >>"$LOG/$1.postinstall.log"
-         eval $cmd >>"$LOG/$1.postinstall.log" 2>&1
+         eval "sh $RECIPE_DIR/$cmd" >>"$LOG/$1.postinstall.log" 2>&1
          if [ $? -ne 0 ]
          then
            log_error "Could not evaluate: $cmd!" "see $LOG/$1.postinstall.log"
@@ -617,8 +619,8 @@ do
          usage
          exit 1
          ;;
-      i)
-         PACKAGE_DIR=$OPTARG
+      r)
+         RECIPE_DIR=$OPTARG
          ;;
       p)
          PACKAGE=$OPTARG
@@ -643,15 +645,15 @@ do
    esac
 done
 
-if [ ! -f "$PACKAGE_DIR/$PACKAGE" ]
+if [ ! -f "$RECIPE_DIR/$PACKAGE" ]
 then
-   echo "  Invalid package: $PACKAGE_DIR/$PACKAGE"
+   echo "  Invalid package: $RECIPE_DIR/$PACKAGE"
    exit 1
 fi
 
 if [ ${PACKAGE:${#PACKAGE}-5:5} != ".ilxr" ]
 then
-   echo "  Invalid package extension: $PACKAGE_DIR/$PACKAGE"
+   echo "  Invalid package extension: $RECIPE_DIR/$PACKAGE"
    exit 1
 fi
 
@@ -669,9 +671,9 @@ then
 fi
 
 # Print info
-echo -e "\n${yellow}--------------------- ilxr v0.2 ---------------------${clear}\n"
-echo -e "${bold}Package directory:${clear} $PACKAGE_DIR"
-echo -e "${bold}Packgage file:${clear} $PACKAGE"
+echo -e "\n${yellow}--------------------- ilxr v0.3 ---------------------${clear}\n"
+echo -e "${bold}Recipe directory:${clear} $RECIPE_DIR"
+echo -e "${bold}Recipe file:${clear} $PACKAGE"
 echo -e "${bold}Jobs:${clear} $JOBS"
 echo -e "${bold}Base directory:${clear} $BASE"
 echo -e "${bold}Install directory:${clear} $INSTALL\n"
@@ -694,7 +696,7 @@ mk_dir $LOG
 export PKG_CONFIG_PATH="$INSTALL/lib/pkgconfig/"
 export PATH="$INSTALL/bin:$PATH"
 
-package_parser "$PACKAGE_DIR/$PACKAGE"
+package_parser "$RECIPE_DIR/$PACKAGE"
 for package in $PACKAGE_LIST
    do if [ "$package" == "dependencies" ]
    then
