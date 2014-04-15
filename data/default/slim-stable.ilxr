@@ -11,11 +11,11 @@ depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 source=http://directfb.org/downloads/Core/DirectFB-1.7/DirectFB-1.7.0.tar.gz
 depends="xorg-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
-options="--enable-sawman --enable-network --enable-fusionsound --with-gfxdrivers=none"
+autoconf_options="--enable-sawman --enable-network --enable-fusionsound --with-gfxdrivers=none"
 files="directfbrc-slim:${HOME}/.directfbrc"
 
 [ilixi]
 source=http://www.directfb.org/downloads/Libs/ilixi-1.0.0.tar.gz
 depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext"
 autoconf=yes
-options="--enable-fusionsound --with-examples"
+autoconf_options="--enable-fusionsound --with-examples"

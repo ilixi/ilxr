@@ -15,11 +15,11 @@ autoconf=yes
 source="git://git.directfb.org/git/directfb/core/DirectFB.git"
 depends="xorg-dev libasound2-dev libpng12-dev libjpeg8-dev"
 autoconf=yes
-options="--enable-network --enable-fusionsound --with-gfxdrivers=none --disable-egl-united"
+autoconf_options="--enable-network --enable-fusionsound --with-gfxdrivers=none --disable-egl-united"
 files="directfbrc-slim:${HOME}/.directfbrc"
 
 [ilixi]
 source=git://git.directfb.org/git/directfb/libs/ilixi.git
 depends="libsigc++-2.0-dev libfontconfig1-dev libxml2-dev gettext"
 autoconf=yes
-options="--enable-fusionsound --with-examples"
+autoconf_options="--enable-fusionsound --with-examples --with-demos"
