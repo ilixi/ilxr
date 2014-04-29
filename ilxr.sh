@@ -664,7 +664,8 @@ fi
 
 DL=$BASE/dl
 WS=$BASE/ws
-LOG=$BASE/log
+LOG=$BASE/log/${PACKAGE:0:${#PACKAGE}-5}
+
 if [ -z $INSTALL ]
 then
    INSTALL=$BASE/${PACKAGE:0:${#PACKAGE}-5}
