@@ -11,7 +11,7 @@ depends="build-essential autoconf libtool pkg-config git curl checkinstall"
 source=git://git.directfb.org/git/directfb/core/linux-fusion.git
 depends="linux-headers-$(uname -r)"
 sudo_install=1
-post_install="sh ${CURRENT}/install_fusion.sh"
+post_install="install_fusion.sh"
 
 [flux]
 source=git://git.directfb.org/git/directfb/core/flux.git
